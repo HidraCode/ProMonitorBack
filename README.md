@@ -4,9 +4,9 @@ Projeto desenvolvido durante a cadeira de Engenharia de Software, ofertada pelo 
 
 **Docente**: Ana Paula Furtado
 
-**Cliente**: Jenifer
+**Cliente**: Jennifer
 
-**Integrantes do Grupo**: Gabriel Cisneiros,Lucas Mattias, Jeane Vitória, Brenno Araújo, Camila Almeida
+**Integrantes do Grupo**: Gabriel Cisneiros,Lucas Matias, Jeane Vitória, Brenno Araújo, Camila Almeida
 
 **Nome do Sistema**: MonitorGest
 
