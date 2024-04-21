@@ -1,7 +1,7 @@
 ---
 name: Template de requisitos
-about: Template pronto para a adição de um requesito, com user story e user case
-title: "[REQ - X] - Nome do Requesito"
+about: Template pronto para a adição de um requisito, com user story e user case
+title: "[REQ - X] - Nome do Requisito"
 labels: ''
 assignees: ''
 
