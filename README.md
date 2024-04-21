@@ -8,7 +8,7 @@ Projeto desenvolvido durante a cadeira de Engenharia de Software, ofertada pelo 
 
 **Integrantes do Grupo**: Gabriel Cisneiros,Lucas Matias, Jeane Vitória, Brenno Araújo, Camila Almeida
 
-**Nome do Sistema**: MonitorGest
+**Nome do Sistema**: ProMonitor
 
 **Descrição**: Sistema Web para gestão das monitorias do Departamento de computação, conectando os professores aos monitores de cada matéria.
 
