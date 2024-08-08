@@ -34,13 +34,41 @@ export const createUserService = async (user) => {
   // Lê o banco de dados
   const db = await readDB();
   
-  // Verifica se o usuário possui um nome e e-mail válidos
-  if (!user.name || !user.email) {
+  // Verifica se o usuário possui um nome, e-mail, telefone, endereço, data de nascimento e departamento
+  if (!user.name || !user.email || !user.telefone || !user.endereco || !user.data_nascimento || !user.departamento) {
     throw new Error('Dados inválidos'); // Lança um erro se os dados estiverem faltando
   }
 
+  // Verifica se o email é válido
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(user.email)) {
+    throw new Error('Email inválido');
+  }
+
+  // Verifica se o e-mail já está cadastrado
+  const emailExists = db.users.some(existingUser => existingUser.email === user.email);
+  if (emailExists) {
+      throw new Error('E-mail já cadastrado');
+  }
+  
+  // Verifica se o nome não possui menos de 2 caracteres
+  if (user.name.trim().length < 2) {
+    throw new Error('Nome inválido');
+  }
+
+  // Verifica se o telefone é válido
+  const phoneRegex = /^[0-9]{10,11}$/;
+  if (!phoneRegex.test(user.telefone)) {
+    throw new Error('Telefone inválido');
+  }
+
+  // Verifica a data de nascimento
+  const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+  if (!dateRegex.test(user.data_nascimento)) {
+    throw new Error('Data de nascimento inválida');
+  }
   // Gera um novo ID para o usuário
-  user.id = db.users.length ? db.users[db.users.length - 1].id + 1 : 1;
+  user.codigo_usuario = db.users.length ? db.users[db.users.length - 1].codigo_usuario + 1 : 1;
   // Adiciona o novo usuário à lista de usuários
   db.users.push(user);
   // Atualiza o arquivo JSON com os dados modificados
