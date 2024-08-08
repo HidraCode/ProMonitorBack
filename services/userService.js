@@ -76,3 +76,43 @@ export const createUserService = async (user) => {
   // Retorna o usuário recém-criado
   return user;
 };
+
+// Serviço para atualizar um usuário
+export const updateUserService = async (updates) => {
+  const db = await readDB();
+
+  // Se não houver código de usuario, não é possível atualizar
+  if (!updates.codigo_usuario) {
+    throw new Error('O código do usuário é obrigatório para a atualização');
+  }
+
+  // Verifica se o email é válido
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (updates.email && !emailRegex.test(updates.email)) {
+    throw new Error('O email fornecido é inválido');
+  }
+
+  // Verifica se o e-mail já está cadastrado
+  const emailExists = db.users.some(existingUser => existingUser.email === updates.email);
+  if (emailExists) {
+      throw new Error('E-mail já cadastrado');
+  }
+
+  // Verifica se o telefone é válido
+  const phoneRegex = /^[0-9]{10,11}$/;
+  if (updates.telefone && !phoneRegex.test(updates.telefone)) {
+    throw new Error('Telefone inválido');
+  }
+
+  // Encontra o index do usuário atualizado
+  const index = db.users.findIndex(u => u.codigo_usuario === updates.codigo_usuario);
+
+  if (index === -1) {
+    throw new Error('Usuário não encontrado');
+  }
+
+  db.users[index] = { ...db.users[index], ...updates };
+
+  await writeDB(db);
+  return db.users[index];
+};
