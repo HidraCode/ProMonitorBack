@@ -50,6 +50,12 @@ export const createUserService = async (user) => {
   if (emailExists) {
       throw new Error('E-mail já cadastrado');
   }
+
+    // Verifica se o telefone já está cadastrado
+    const phoneExists = db.users.some(existingUser => existingUser.telefone === user.telefone);
+    if (phoneExists) {
+        throw new Error('Telefone já cadastrado!');
+    }
   
   // Verifica se o nome não possui menos de 2 caracteres
   if (user.name.trim().length < 2) {
