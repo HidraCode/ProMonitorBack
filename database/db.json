@@ -17,6 +17,15 @@
       "data_nascimento": "01/01/1750",
       "departamento": "DC",
       "codigo_usuario": 2
+    },
+    {
+      "name": "Brenno",
+      "email": "breninho@example.com",
+      "telefone": "81992229334",
+      "endereco": "nome da rua",
+      "data_nascimento": "10/11/1999",
+      "departamento": "DC",
+      "codigo_usuario": 3
     }
   ]
 }
