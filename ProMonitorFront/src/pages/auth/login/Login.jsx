@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd'; 
 import { AiOutlineEye, AiFillEye } from 'react-icons/ai'; 
+import { useState } from 'react';
 
 const Login = () => {
   
