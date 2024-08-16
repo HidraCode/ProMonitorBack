@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Row, Form, Button, Input } from 'antd';
-import logoPreta from '../../assets/logoPreta.svg';
+import logoPreta from '../../../assets/logoPreta.svg';
 import { LeftOutlined } from '@ant-design/icons';
 
 const VerificarCodigo = () => {
