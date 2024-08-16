@@ -2,3 +2,8 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+/*Ajuste para que a mensagem de erro nos inputs do Ant Design fique alinhada à esquerda*/
+.ant-form-item-explain { 
+    text-align: left;
+}
