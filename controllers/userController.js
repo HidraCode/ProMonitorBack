@@ -25,7 +25,7 @@ export const createUser = async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     // Em caso de erro, retorna uma resposta de erro com o status 500 e a mensagem do erro
-    res.status(500).json({ error: error.message || 'Erro ao criar usuário' });
+    res.status(500).json({ message: 'Erro ao cadastrar usuário: ', error: error.message });
   }
 };
 

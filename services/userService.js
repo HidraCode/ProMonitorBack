@@ -4,6 +4,8 @@
 import fs from 'fs/promises';
 ///import path from 'path';
 import { pool } from '../database/db.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 // Define o caminho absoluto para o arquivo JSON do banco de dados
 //const dbPath = path.resolve('database/db.json');
@@ -34,12 +36,16 @@ export const getAllUsersService = async () => {
   }
 };
 
+const SALT_ROUNDS = 10;
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_aqui';
+
 // Serviço para criar um novo usuário
 export const createUserService = async (user) => {
-  // Lê o banco de dados
-  const db = await readDB();
-  
-  // Verifica se o usuário possui um nome, e-mail, telefone, endereço, data de nascimento e departamento
+  const { nome, email, telefone, endereco, data_nascimento, departamento, senha } = user;
+
+  // Encripta a senha
+  const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
+
   if (!user.name || !user.email || !user.telefone || !user.endereco || !user.data_nascimento || !user.departamento) {
     throw new Error('Dados inválidos'); // Lança um erro se os dados estiverem faltando
   }
@@ -50,18 +56,6 @@ export const createUserService = async (user) => {
     throw new Error('Email inválido');
   }
 
-  // Verifica se o e-mail já está cadastrado
-  const emailExists = db.users.some(existingUser => existingUser.email === user.email);
-  if (emailExists) {
-      throw new Error('E-mail já cadastrado');
-  }
-
-    // Verifica se o telefone já está cadastrado
-    const phoneExists = db.users.some(existingUser => existingUser.telefone === user.telefone);
-    if (phoneExists) {
-        throw new Error('Telefone já cadastrado!');
-    }
-  
   // Verifica se o nome não possui menos de 2 caracteres
   if (user.name.trim().length < 2) {
     throw new Error('Nome inválido');
@@ -73,19 +67,47 @@ export const createUserService = async (user) => {
     throw new Error('Telefone inválido');
   }
 
-  // Verifica a data de nascimento
-  const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-  if (!dateRegex.test(user.data_nascimento)) {
-    throw new Error('Data de nascimento inválida');
+  // Cria uma conexão com o banco de dados
+  const connection = await pool.getConnection();
+  try {
+    // Verificar se o email já está cadastrado
+    const [existingEmail] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
+    if (existingEmail.length > 0){
+      throw new Error('Email já está em uso!');
+    }
+
+    // Verifica se o telefone já está cadastrado
+    const [existingPhone] = await connection.query('SELECT * FROM USUARIO WHERE telefone = ?', [telefone]);
+    if (existingPhone.length > 0) {
+      throw new Error('Telefone já está em uso!');
+    }
+
+    const query = `
+      INSERT INTO USUARIO (nome, email, telefone, endereco, data_nascimento, departamento, senha)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [nome, email, telefone, endereco, data_nascimento, departamento, hashedPassword];
+
+    // Realiza a consulta inserindo os dados
+    const [result] = await connection.query(query, values);
+
+    // Cria o payload do token com o ID do usuário e outras informações relevantes
+    const payload = { id: result.insertId, email };
+    // Gera o token JWT
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+    return {
+      id: result.insertId,
+      nome,
+      email,
+      token,
+    };
+  } catch (error) {
+    throw new Error('Erro ao cadastrar usuário: ' + error.message);
+  } finally {
+    connection.release();
   }
-  // Gera um novo ID para o usuário
-  user.codigo_usuario = db.users.length ? db.users[db.users.length - 1].codigo_usuario + 1 : 1;
-  // Adiciona o novo usuário à lista de usuários
-  db.users.push(user);
-  // Atualiza o arquivo JSON com os dados modificados
-  await writeDB(db);
-  // Retorna o usuário recém-criado
-  return user;
 };
 
 // Serviço para atualizar um usuário
