@@ -9,10 +9,10 @@ export const getAllUsers = async (req, res) => {
     // Chama o serviço para obter todos os usuários
     const users = await getAllUsersService();
     // Retorna a lista de usuários no formato JSON
-    res.json(users);
+    res.status(200).json(users);
   } catch (error) {
     // Em caso de erro, retorna uma resposta de erro com o status 500
-    res.status(500).json({ error: 'Erro ao buscar usuários' });
+    res.status(500).json({ message: 'Erro ao buscar usuários', error: error.message });
   }
 };
 

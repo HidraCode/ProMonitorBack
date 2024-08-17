@@ -2,31 +2,36 @@
 
 // Importa o módulo de promessas do sistema de arquivos e o módulo de caminho
 import fs from 'fs/promises';
-import path from 'path';
+///import path from 'path';
+import { pool } from '../database/db.js';
 
 // Define o caminho absoluto para o arquivo JSON do banco de dados
-const dbPath = path.resolve('database/db.json');
+//const dbPath = path.resolve('database/db.json');
 
 // Função para ler o arquivo JSON do banco de dados
-const readDB = async () => {
+//const readDB = async () => {
   // Lê o conteúdo do arquivo JSON como uma string
-  const data = await fs.readFile(dbPath, 'utf8');
+  //const data = await fs.readFile(dbPath, 'utf8');
   // Analisa a string JSON e retorna um objeto JavaScript
-  return JSON.parse(data);
-};
+  //return JSON.parse(data);
+//};
 
 // Função para escrever dados no arquivo JSON do banco de dados
-const writeDB = async (data) => {
+//const writeDB = async (data) => {
   // Converte o objeto JavaScript em uma string JSON formatada e escreve no arquivo
-  await fs.writeFile(dbPath, JSON.stringify(data, null, 2));
-};
+  //await fs.writeFile(dbPath, JSON.stringify(data, null, 2));
+//};
 
 // Serviço para obter todos os usuários
 export const getAllUsersService = async () => {
-  // Lê o banco de dados
-  const db = await readDB();
-  // Retorna a lista de usuários
-  return db.users;
+  const connection = await pool.getConnection();  // Se conecta ao banco de dados
+  try {
+    // Realiza e retorna a consulta
+    const [rows] = await connection.query('SELECT * FROM USUARIO');
+    return rows;
+  } finally {
+    connection.release();
+  }
 };
 
 // Serviço para criar um novo usuário
