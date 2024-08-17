@@ -7,23 +7,6 @@ import { pool } from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-// Define o caminho absoluto para o arquivo JSON do banco de dados
-//const dbPath = path.resolve('database/db.json');
-
-// Função para ler o arquivo JSON do banco de dados
-//const readDB = async () => {
-  // Lê o conteúdo do arquivo JSON como uma string
-  //const data = await fs.readFile(dbPath, 'utf8');
-  // Analisa a string JSON e retorna um objeto JavaScript
-  //return JSON.parse(data);
-//};
-
-// Função para escrever dados no arquivo JSON do banco de dados
-//const writeDB = async (data) => {
-  // Converte o objeto JavaScript em uma string JSON formatada e escreve no arquivo
-  //await fs.writeFile(dbPath, JSON.stringify(data, null, 2));
-//};
-
 // Serviço para obter todos os usuários
 export const getAllUsersService = async () => {
   const connection = await pool.getConnection();  // Se conecta ao banco de dados
@@ -46,7 +29,7 @@ export const createUserService = async (user) => {
   // Encripta a senha
   const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
 
-  if (!user.name || !user.email || !user.telefone || !user.endereco || !user.data_nascimento || !user.departamento) {
+  if (!user.nome || !user.email || !user.telefone || !user.endereco || !user.data_nascimento || !user.departamento || !user.senha) {
     throw new Error('Dados inválidos'); // Lança um erro se os dados estiverem faltando
   }
 
@@ -57,7 +40,7 @@ export const createUserService = async (user) => {
   }
 
   // Verifica se o nome não possui menos de 2 caracteres
-  if (user.name.trim().length < 2) {
+  if (user.nome.trim().length < 2) {
     throw new Error('Nome inválido');
   }
 
@@ -98,7 +81,7 @@ export const createUserService = async (user) => {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
     return {
-      id: result.insertId,
+      codigo_usuario: result.insertId,
       nome,
       email,
       token,
@@ -112,6 +95,7 @@ export const createUserService = async (user) => {
 
 // Serviço para atualizar um usuário
 export const updateUserService = async (updates) => {
+  
   const db = await readDB();
 
   // Se não houver código de usuario, não é possível atualizar

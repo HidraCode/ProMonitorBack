@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
+import alunoRoutes from './routes/alunoRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
 // Configuração das variáveis de ambiente
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Rotas
 app.use('/api/users', userRoutes);
+app.use('/api/alunos', alunoRoutes);
 app.use('/api/auth', authRoutes);
 
 // Iniciar o servidor
