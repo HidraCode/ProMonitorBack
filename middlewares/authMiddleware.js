@@ -1,15 +1,39 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-export const authMiddleware = async (req, res, next) => {
-    const token = req.headers['x-access-token'] || req.headers['authorization'];
-    if (!token) {
-      return res.status(401).send({ error: 'Unauthorized' });
+dotenv.config();
+
+// Checa o token para permitir acesso a rota
+export const authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(401).json({ message: 'Token não fornecido' });
+  
+  const token = authHeader.split(' ')[1];
+  
+  if (!token) return res.status(401).json({ message: 'Token inválido' });
+ 
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+
+    // const decodedToken = jwt.decode(token);
+    // console.log(decodedToken);  // Verificar se `role` está presente
+
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Token inválido' });
+  }
+};
+
+// Verifica se o usuário possui a role necessária para acessar a rota
+export const authorizeRoles = (requiredRole) => {
+  return (req, res, next) => {
+    if (req.user && req.user.role == requiredRole) {
+      next();
     }
-    try {
-      const decoded = jwt.verify(token, process.env.SECRET_KEY);
-      req.user = decoded; 
-      next(); 
-    } catch (err) {
-      return res.status(401).send({ error: 'Invalid token' }); 
+    else {
+      // console.log(req.user, req.user.role, requiredRole);
+      return res.status(403).json({ message: 'Acesso negado' });
     }
+  };
 };
