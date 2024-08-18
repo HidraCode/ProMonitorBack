@@ -1,11 +1,13 @@
 import express from 'express';
+import { passwordRecoveryController, verifyCodeController } from '../controllers/authController.js';
 
 const router = express.Router();
 
-import { authController } from '../controllers/authController.js';
+import { authController, verifyCodeController } from '../controllers/authController.js';
 
 // Define a rota de autenticação
-router.post('/auth/verify-code', authController);
-router.post('/auth/password-recovery/', authController)
+router.post('/auth/login', authController);
+router.post('/auth/verify-code', verifyCodeController);
+router.post('/auth/password-recovery/', passwordRecoveryController)
 
 export default router;
