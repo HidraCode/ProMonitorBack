@@ -1,9 +1,8 @@
 import express from 'express';
-import { passwordRecoveryController, verifyCodeController } from '../controllers/authController.js';
+import { authController, passwordRecoveryController, verifyCodeController } from '../controllers/authController.js';
 
 const router = express.Router();
 
-import { authController, verifyCodeController } from '../controllers/authController.js';
 
 // Define a rota de autenticação
 router.post('/login', authController);
