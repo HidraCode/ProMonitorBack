@@ -19,7 +19,7 @@ app.use(express.json());
 // Rotas
 app.use('/api/users', userRoutes);
 app.use('/api/alunos', alunoRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 // Iniciar o servidor
 app.listen(port, () => {
