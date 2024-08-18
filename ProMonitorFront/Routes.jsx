@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Signup from './src/pages/auth/cadastro/signup';
+import Signup from './src/pages/auth/cadastro/Signup';
 import Login from './src/pages/auth/login/Login';
 import RecuperarSenha from './src/pages/auth/login/RecuperarSenha';
 import VerificarCodigo from './src/pages/auth/login/VerificarCodigo';
