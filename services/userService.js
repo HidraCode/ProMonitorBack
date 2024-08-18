@@ -26,6 +26,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret_aqui';
 export const createUserService = async (user) => {
   const { nome, email, telefone, endereco, data_nascimento, departamento, senha } = user;
 
+
   // Encripta a senha
   const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
 
@@ -55,7 +56,7 @@ export const createUserService = async (user) => {
   try {
     // Verificar se o email já está cadastrado
     const [existingEmail] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
-    if (existingEmail.length > 0){
+    if (existingEmail.length > 0) {
       throw new Error('Email já está em uso!');
     }
 
@@ -95,7 +96,7 @@ export const createUserService = async (user) => {
 
 // Serviço para atualizar um usuário
 export const updateUserService = async (updates) => {
-  
+
   const db = await readDB();
 
   // Se não houver código de usuario, não é possível atualizar
@@ -112,7 +113,7 @@ export const updateUserService = async (updates) => {
   // Verifica se o e-mail já está cadastrado
   const emailExists = db.users.some(existingUser => existingUser.email === updates.email);
   if (emailExists) {
-      throw new Error('E-mail já cadastrado');
+    throw new Error('E-mail já cadastrado');
   }
 
   // Verifica se o telefone é válido
@@ -121,6 +122,11 @@ export const updateUserService = async (updates) => {
     throw new Error('Telefone inválido');
   }
 
+  if (updates.senha) {
+    const SALT_ROUNDS = 10;
+    updates.senha = await bcrypt.hash(updates.senha, SALT_ROUNDS);
+  }
+  
   // Encontra o index do usuário atualizado
   const index = db.users.findIndex(u => u.codigo_usuario === updates.codigo_usuario);
 
