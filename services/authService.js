@@ -21,16 +21,16 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
             console.log(alunoData)
             // Compara a senha fornecida com a senha armazenada
             const isPasswordValid = await bcrypt.compare(senha, alunoData.senha);
-        
+
             if (!isPasswordValid) {
                 throw new Error('Email ou senha incorretos');
             }
-        
+
             // Cria o payload do token com o ID do usuário e outras informações 
             const payload = { codigo_usuario: alunoData.codigo_usuario, email };
             // Cria o token
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-        
+
             return {
                 codigo_usuario: alunoData.codigo_usuario,
                 email: alunoData.email,
@@ -48,16 +48,16 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
             console.log(alunoData)
             // Compara a senha fornecida com a senha armazenada
             const isPasswordValid = await bcrypt.compare(senha, professorData.senha);
-        
+
             if (!isPasswordValid) {
                 throw new Error('Email ou senha incorretos');
             }
-        
+
             // Cria o payload do token com o ID do usuário e outras informações 
             const payload = { codigo_usuario: professorData.codigo_usuario, email };
             // Cria o token
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-        
+
             return {
                 codigo_usuario: professorData.codigo_usuario,
                 email: professorData.email,
@@ -65,7 +65,7 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
             };
         }
     } catch (error) {
-        throw new Error ('Erro ao realizar login: ' + error.message);
+        throw new Error('Erro ao realizar login: ' + error.message);
     } finally {
         connection.release();
     }
@@ -115,7 +115,7 @@ export const sendMail = async (email) => {
 
         });
 
-        const emailBody = <p>Recuperação de Senha</p>
+        const emailBody = '<p>Recuperação de Senha</p>';
 
         const mailOptions = {
             from: "promonitorufrpe@gmail.com",
