@@ -6,7 +6,8 @@ import fs from 'fs/promises';
 import { pool } from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-
+import dotenv from 'dotenv';
+dotenv.config();
 // Serviço para obter todos os usuários
 export const getAllUsersService = async () => {
   const connection = await pool.getConnection();  // Se conecta ao banco de dados
