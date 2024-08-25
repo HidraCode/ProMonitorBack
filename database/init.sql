@@ -33,7 +33,7 @@ CREATE TABLE PROFESSOR (
 
 DROP TABLE IF EXISTS MONITOR;
 CREATE TABLE MONITOR ( 
-    codigo_monitor INT PRIMARY KEY, 
+    codigo_monitor INT PRIMARY KEY auto_increment, 
     codigo_aluno INT, 
     ativo BOOLEAN, 
     curso VARCHAR(100), 
