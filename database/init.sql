@@ -30,3 +30,14 @@ CREATE TABLE PROFESSOR (
     is_coordenador BOOLEAN DEFAULT FALSE, -- indica se o professor é também coordenador
     FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario)
 );
+
+DROP TABLE IF EXISTS CODIGO_RECUPERACAO;
+CREATE TABLE CODIGO_RECUPERACAO (
+    id INT auto_increment,
+    codigo_usuario INT NOT NULL,
+    codigo_esperado INT NOT NULL,
+    codigo_recebido INT,
+    expira_em DATETIME,
+    PRIMARY KEY (id), -- Define a chave primária
+    FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario) -- Relaciona com a tabela USUARIO
+);
