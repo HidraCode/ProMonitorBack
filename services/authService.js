@@ -2,8 +2,8 @@ import { pool } from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
-import { getAllUsersService } from './userService.js';
-import { useState } from 'react';
+import nodemailer from 'nodemailer';
+import axios from 'axios';
 
 dotenv.config();
 
@@ -79,34 +79,104 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
 export const passRecoveryService = async (email) => {
     const connection = await pool.getConnection();
 
+    // Criando código de recuperação
     const code = Math.floor(Math.random() * 9000);
-    const expiresAt = new Date(Date.now() + 3600000); // 1 hora de expiração
+
+    // Formatando para que tenha sempre 4 dígitos
+    const formattedCode = code.toString().padStart(4, '0');
 
     try {
         // Procura no banco de dados algum usuário com o e-mail recebido do usuário
         const [userData] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
         
-        // Verifica se algum usuário foi encontrado com dado e-mail
-        if (userData.length === 0) {
-            throw new Error('Usuário não encontrado.');
-        }
+        // Procura no banco de dados se o usuário já possui um código de verificação ativo
+        const [answer] = await connection.query ('SELECT * FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', 
+            [codigo_usuario]
+        );
 
+        // Verifica se usuário não existe ou possui um código válido
+        if (userData.length === 0 || answer > 0) {
+            throw new Error('Usuário não encontrado ou possui um código ainda válido.');
+        }
+        
         // Acessa o primeiro item do array e obtém o código do usuário
         const { codigo_usuario } = userData[0];
-        
+
         // Insere o código de recuperação no banco de dados
         const [result] = await connection.query(
-            'INSERT INTO codigo_recuperacao (codigo_usuario, codigo_esperado, codigo_recebido, expira_em) VALUES (?, ?, ?, ?)',
-            [codigo_usuario, code, null, expiresAt]
+            'INSERT INTO CODIGO_RECUPERACAO (codigo_usuario, codigo_esperado, codigo_recebido, expira_em) VALUES (?, ?, ?, ?)',
+            [codigo_usuario, formattedCode, null, expiresAt]
         );
+
+        // Cria o payload do token
+        const payload = {email}
+        
+        // Gera o token, definindo a duração do link para 1h, mesma duração do código
+        const token = jwt.sign (payload, JWT_SECRET, { expiresIn: '1h' })
+        
+        // Envia o e-mail com o link de recuperação
+        const recoveryLink = `http://localhost:3000/pass-recovery/verify-code?token=${token}`; 
+        sendMail (email, formattedCode, recoveryLink);
 
         console.log('Código de recuperação inserido com sucesso:', result);
     } catch (error) {
         // Lança o erro
-        console.error('Erro ao criar código de recuperação:', error);
+        console.error('Erro:', error);
         throw error;
     } finally {
         // Libera a conexão
         connection.release();
     }
 };
+
+export const verifyCodeService = async (token) => {
+    try {
+        // Faz a chamada HTTP para verificar o token (substitua pelo seu endpoint real)
+        const response = await axios.get('http://seu-backend.com/verificar-token', {
+            params: { token }
+        });
+
+        return response.data; // Retorna a resposta do serviço
+    } catch (error) {
+        console.error('Erro no serviço de verificação:', error);
+        throw new Error('Token inválido ou expirado.');
+    }
+};
+
+
+const sendMail = async (email, code) => {
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, 
+        auth: {
+            user: "promonitorufrpe@gmail.com",
+            pass: "oiinyikrxaihamqg",
+        },
+    });
+
+    const emailBody = `
+        <p>Recuperação de Senha</p>
+        <p>Olá, seu código de verificação do ProMonitor: <strong>${code}</strong>. Esse código expira em 1 hora.</p>
+        <p>Para redefinir sua senha, clique no link abaixo e insira o código:</p>
+        <a href="${recoveryLink}">Redefinir Senha</a>
+        `;
+
+    const mailOptions = {
+        from: "promonitorufrpe@gmail.com",
+        to: email,
+        subject: "Código de recuperação de senha ProMonitor",
+        text: `Olá, seu código de verificação do ProMonitor: ${code}. Esse código expira em 1 hora.`,
+        html: emailBody,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("E-mail enviado:", info.response);
+    } catch (error) {
+        console.error("Erro ao enviar o e-mail:", error);
+        throw new Error('Erro ao enviar o e-mail com o código de recuperação: ' + error.message);
+    }
+};
+
