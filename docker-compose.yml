@@ -12,6 +12,8 @@ services:
       MYSQL_PASSWORD: root
       MYSQL_DATABASE: promonitor
       JWT_SECRET: secret_aqui
+    networks:
+      - my-network
     depends_on:
       - db
 
@@ -27,6 +29,11 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - my-network
 
 volumes:
   db_data:
+
+networks:
+  my-network:
