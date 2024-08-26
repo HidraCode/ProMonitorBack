@@ -28,6 +28,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/editais', editalRoutes);
 app.use('/api/monitores', monitorRoutes);
 
+// Endpoint para verificar se a aplicação está saudável no Render
+app.get('/healthcheck', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Iniciar o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
