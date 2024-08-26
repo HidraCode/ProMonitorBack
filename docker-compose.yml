@@ -23,6 +23,7 @@ services:
     container_name: gestaomonitoria_db
     ports:
       - '3306:3306'
+    hostname: db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: promonitor
