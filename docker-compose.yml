@@ -1,22 +1,4 @@
 services:
-  # serviço da aplicação NodeJs
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      PORT: 3000
-      MYSQL_HOST: db-alias
-      MYSQL_PORT: 3306
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_DATABASE: promonitor
-      JWT_SECRET: secret_aqui
-    networks:
-      - my-network
-    depends_on:
-      - db
-
   # serviço do banco de dados MySQL
   db:
     image: mysql:8.0
@@ -31,12 +13,30 @@ services:
       - db_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      my-network:
+      app:
         aliases:
           - db-alias
+
+  # serviço da aplicação NodeJs
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MYSQL_HOST: db-alias
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: promonitor
+      JWT_SECRET: secret_aqui
+    networks:
+      - app
+    depends_on:
+      - db
 
 volumes:
   db_data:
 
 networks:
-  my-network:
+  app:
