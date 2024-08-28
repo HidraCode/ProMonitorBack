@@ -11,12 +11,9 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.0",
-<<<<<<< HEAD
-    "nodemailer": "^6.9.14"
-=======
+    "nodemailer": "^6.9.14",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
->>>>>>> 8ee791f19e659acc9dc54c3480280a4bd10adb9e
   },
   "scripts": {
     "start": "node server.js",
