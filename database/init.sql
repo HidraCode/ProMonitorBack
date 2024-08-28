@@ -60,7 +60,7 @@ CREATE TABLE EDITAL (
 
 DROP TABLE IF EXISTS INSCRICAO;
 CREATE TABLE INSCRICAO (
-    codigo_inscricao INT PRIMARY KEY,
+    codigo_inscricao INT PRIMARY KEY auto_increment,
     codigo_edital INT,
     codigo_aluno INT,
     data_inscricao DATE,

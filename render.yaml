@@ -1,44 +1,58 @@
 services:
-  - name: app
-    type: web
+  # A web service that builds from a Dockerfile
+  - type: web
+    runtime: docker
+    name: webdis
+    healthCheckPath: /healthcheck
+
+  # Serviço da aplicação Node.js
+  - type: web
+    name: node-app
+    plan: free
     env: node
-    plan: starter
-    buildCommand: "yarn install"
-    startCommand: "yarn dev"
+    buildCommand: "yarn build"
+    startCommand: "yarn start"
     envVars:
       - key: PORT
-        value: 3000
-      - key: MYSQL_HOST
-        value: gestaomonitoria-db
-      - key: MYSQL_USER
-        value: root
-      - key: MYSQL_PASSWORD
-        value: root
-      - key: MYSQL_DATABASE
-        value: promonitor
-      - key: MYSQL_PORT
-        value: 3306
+        value: 10000
+      - key: POSTGRES_HOST
+        value: ${POSTGRES_HOST} # Nome de host gerado para o PostgreSQL
+      - key: POSTGRES_PORT
+        value: ${POSTGRES_PORT} # Porta padrão do PostgreSQL
+      - key: POSTGRES_USER
+        value: ${POSTGRES_USER} # Nome de usuário gerado
+      - key: POSTGRES_PASSWORD
+        value: ${POSTGRES_PASSWORD} # Senha gerada para PostgreSQL
+      - key: POSTGRES_DATABASE
+        value: ${POSTGRES_DATABASE} # Nome do banco de dados gerado
       - key: JWT_SECRET
         value: secret_aqui
-    autoDeploy: true
     healthCheckPath: "/healthcheck"
-    disk:
-      persistentStorage: false
-    services:
-      - name: gestaomonitoria-db
+    autoDeploy: true
+    routes:
+      - type: healthcheck
+        path: /healthcheck
 
-  - name: gestaomonitoria-db
-    type: database
-    plan: starter
-    databaseName: promonitor
-    user: root
-    password: root
-    startCommand: ""
+envVarGroups:
+  - name: postgres
     envVars:
-      - key: MYSQL_ROOT_PASSWORD
-        value: root
-      - key: MYSQL_DATABASE
-        value: promonitor
-    disk:
-      persistentStorage: true
-    migrationsPath: ./database/init.sql
+    - key: POSTGRES_DATABASE
+      value: promonitor
+    - key: POSTGRES_USER
+      value: root
+    - key: POSTGRES_PASSWORD
+      value: root
+    - key: POSTGRES_HOST
+      value: ${RENDER_EXTERNAL_HOSTNAME}
+    - key: POSTGRES_PORT
+      value: 5432
+
+# List all PostgreSQL databases here
+databases:
+
+  # A database with a read replica
+  - name: promonitor
+    databaseName: promonitor
+    user: root # Optional
+    readReplicas:
+      - name: promonitor-replica
