@@ -79,10 +79,10 @@ export const passRecoveryService = async (email) => {
     const connection = await pool.getConnection();
 
     // Criando código de recuperação
-    const code = Math.floor(Math.random() * 9000);
+    const code = Math.floor(Math.random() * 900000);
 
     // Formatando para que tenha sempre 4 dígitos
-    const formattedCode = code.toString().padStart(4, '0');
+    const formattedCode = code.toString().padStart(6, '0');
 
     // Definindo a data de expiração
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora a partir de agora
@@ -90,81 +90,132 @@ export const passRecoveryService = async (email) => {
     try {
         // Procura no banco de dados algum usuário com o e-mail recebido do usuário
         const [userData] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
-        // Verifica se o usuário já possui um código de verificação ativo
-        const [existingCode] = await connection.query('SELECT * FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
-
 
         // Verifica se usuário não existe
         if (userData.length === 0) {
             throw new Error('Usuário não encontrado.');
         }
 
-        // Verifica se usuário já tem um código enviado ao e-mail
-        if (existingCode.length > 0) {
-            throw new Error('Usuário já possui um código de recuperação válido. Verifique seu e-mail.');
-        }
-
         // Acessa o primeiro item do array e obtém o código do usuário
         const { codigo_usuario } = userData[0];
 
+        // Verifica se o usuário já possui um código de verificação ativo
+        const [existingCode] = await connection.query('SELECT * FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
+
+        // Verifica se o usuário já tem um código enviado ao e-mail
+        if (existingCode.length > 0) {
+            // Deleta do banco de dados para reinserir um novo
+            await connection.query('DELETE FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario])
+        }
+
         // Insere o código de recuperação no banco de dados
         await connection.query(
-            'INSERT INTO CODIGO_RECUPERACAO (codigo_usuario, codigo_esperado, codigo_recebido, expira_em) VALUES (?, ?, ?, ?)',
-            [codigo_usuario, formattedCode, null, expiresAt]
+            'INSERT INTO CODIGO_RECUPERACAO (codigo_usuario, codigo_esperado, expira_em) VALUES (?, ?, ?)',
+            [codigo_usuario, formattedCode, expiresAt]
         );
 
-        // Cria o payload do token
-        const payload = { email }
-
-        // Gera o token, definindo a duração do link para 1h, mesma duração do código
+        // Cria o payload  do token com o código do usuário do código de recuperação
+        const payload = { codigo_usuario }
+        console.log(payload)
+        // Gera o token, definindo a duração do token para 1h
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
 
-        // Envia o e-mail com o link de recuperação
-        const recoveryLink = `http://localhost:3000/pass-recovery/verify-code?token=${token}`;
-        sendMail(email, formattedCode, recoveryLink);
-
-        console.log('Código de recuperação inserido com sucesso.');
+        // Envia o e-mail com o código de recuperação
+        sendMail(email, formattedCode);
 
         // Retorna uma mensagem de sucesso ao front-end
-        return { success: true };
+        return { "success": true, "token": token };
 
     } catch (error) {
         // Lança o erro
-        console.error('Erro:', error);
-        throw error;
+        console.error(error);
+        return { "success": false, "message": error.message };
     } finally {
         // Libera a conexão
         connection.release();
     }
 };
 
-export const verifyCodeService = async (token) => {
+export const verifyCodeService = async (token, verification_code) => {
+    const connection = await pool.getConnection();
     try {
         // Verifica e decodifica o token
         const decoded = jwt.verify(token, JWT_SECRET);
-        const { email } = decoded;
+        const { codigo_usuario } = decoded;
 
-        // Conecta ao banco de dados
-        const connection = await pool.getConnection();
-        // Verifica se o e-mail é válido
-        const [userData] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
+        // Busca o usuário pelo código no banco de dados
+        const [userData] = await connection.query('SELECT * FROM USUARIO WHERE codigo_usuario = ?', [codigo_usuario]);
+        // Procura um código de recuperação correspondente ao código de usuário
+        const [codeData] = await connection.query('SELECT * FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
 
+        // Verifica se não há usuário com este codigo_usuario no banco de dados
         if (userData.length === 0) {
             throw new Error('usuário não encontrado.');
         }
 
-        // Token válido, envia a resposta de sucesso
-        return { success: true, message: 'Token válido. Você pode redefinir sua senha agora.' };
+        // Verifica se o usuário não possui código cadastrado ou se o código expirou
+        if (codeData.length === 0) {
+            throw new Error('O usuário não possui códigos de recuperação cadastrados.');
+        }
+        else if (new Date(codeData[0].expira_em) < new Date()) {
+            // Deleta o código do banco de dados
+            await connection.query('DELETE FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
+            throw new Error('Código expirado.');
+        }
+
+        // Passa para verificar o código esperado e o recebido
+        if (codeData[0].codigo_esperado == verification_code) {
+            // Deleta o código do banco de dados
+            await connection.query('DELETE FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
+            // Retorna a resposta
+            return { success: true };
+        }
+        else {
+            // Retorna a resposta
+            return { success: false };
+        }
 
     } catch (error) {
-        console.error('Erro no serviço de verificação:', error);
-        throw new Error('Token inválido ou expirado.');
+        console.error('Erro no serviço de verificação:', error.message);
+        throw new Error(error.message);
     } finally {
-        // Libera a conexão
-        if (connection) connection.release();
+        connection.release();
     }
 };
 
+export const passResetService = async (token, values) => {
+    const connection = await pool.getConnection();
+    try {
+        // Verifica e decodifica o token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const { codigo_usuario } = decoded;
+        const { senha, confirmar_senha } = values
+
+        // Busca o usuário pelo código no banco de dados
+        const [userData] = await connection.query('SELECT * FROM USUARIO WHERE codigo_usuario = ?', [codigo_usuario]);
+
+        // Verifica se não há usuário com o este codigo_usuario
+        if (userData.length === 0) {
+            throw new Error('usuário não encontrado.');
+        }
+
+        // Passa para verificar se a senha e a confirmação da senha são iguais
+        if (senha === confirmar_senha) {
+            // Altera a senha do usuário no banco de dados
+            await connection.query('UPDATE USUARIO SET senha = ? WHERE codigo_usuario = ?', [senha, codigo_usuario]);
+            return { success: true };
+        }
+        else {
+            return { success: false };
+        }
+
+    } catch (error) {
+        console.error('Erro:', error.message);
+        throw new Error(error.message);
+    } finally {
+        connection.release();
+    }
+};
 
 const sendMail = async (email, code) => {
     const transporter = nodemailer.createTransport({
@@ -181,8 +232,6 @@ const sendMail = async (email, code) => {
     const emailBody = `
         <p>Recuperação de Senha</p>
         <p>Olá, seu código de verificação do ProMonitor: <strong>${code}</strong>. Esse código expira em 1 hora.</p>
-        <p>Para redefinir sua senha, clique no link abaixo e insira o código:</p>
-        <a href="${recoveryLink}">Redefinir Senha</a>
         `;
 
     const mailOptions = {

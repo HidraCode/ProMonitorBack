@@ -31,18 +31,15 @@ CREATE TABLE PROFESSOR (
     FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario)
 );
 
-<<<<<<< HEAD
 DROP TABLE IF EXISTS CODIGO_RECUPERACAO;
 CREATE TABLE CODIGO_RECUPERACAO (
-    id INT auto_increment,
-    codigo_usuario INT NOT NULL,
+    id INT NOT NULL auto_increment,
+    codigo_usuario INT NOT NULL UNIQUE,
     codigo_esperado INT NOT NULL,
-    codigo_recebido INT,
-    expira_em DATETIME,
+    expira_em DATETIME NOT NULL,
     PRIMARY KEY (id), -- Define a chave primária
     FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario) -- Relaciona com a tabela USUARIO
 );
-=======
 DROP TABLE IF EXISTS MONITOR;
 CREATE TABLE MONITOR ( 
     codigo_monitor INT PRIMARY KEY auto_increment, 
@@ -129,4 +126,3 @@ CREATE TABLE RELATORIO (
     FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
     FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
 );
->>>>>>> 337f3b5d1088e989e675ed0f62ea8629c648ac22

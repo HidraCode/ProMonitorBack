@@ -1,5 +1,4 @@
-import { loginUserService } from '../services/authService.js';
-import { passRecoveryService } from '../services/authService.js'
+import { loginUserService, verifyCodeService, passResetService, passRecoveryService } from '../services/authService.js';
 
 // Controlador para login de usuário
 export const authController = async (req, res) => {
@@ -14,7 +13,7 @@ export const authController = async (req, res) => {
 
 // Controlador para recuperação de senha
 export const passwordRecoveryController = async (req, res) => {
-    const { email } = req.body;  
+    const { email } = req.body;
     try {
         const response = await passRecoveryService(email);
         res.json(response);
@@ -23,28 +22,35 @@ export const passwordRecoveryController = async (req, res) => {
     }
 };
 
-// Controlador para token e reencaminhar para o serviço de 
+// Controlador para verificação de código de recuperação de senha
 export const verifyCodeController = async (req, res) => {
-    const { token } = req.query;
-
+    const { token, verification_code } = req.body;
     try {
-        // Verifica e decodifica o token
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const { email } = decoded;
-
-        // Verifica se o e-mail é válido
-        const connection = await pool.getConnection();
-        const [userData] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
-        if (userData.length === 0) {
-            return res.status(400).send('Token inválido.');
+        const response = await verifyCodeService(token, verification_code);
+        if (response.success) {
+            return res.status(200).json({ message: "Código validado com sucesso." });
         }
-
-        // Exibe a página para redefinir a senha ou qualquer outra lógica necessária
-        res.send('Token válido. Você pode redefinir sua senha agora.');
-
-        connection.release();
+        return res.status(400).json({ message: "Código de recuperação inválido." });
     } catch (error) {
         console.error('Erro:', error);
-        res.status(400).send('Token inválido ou expirado.');
+        res.status(400).json(error);
+    }
+};
+
+// Controlador para redefinir senhas
+export const passResetController = async (req, res) => {
+    const { token, values } = req.body;
+
+    try {
+        const response = await passResetService(token, values);
+        if (response.success) {
+            return res.status(200).json({ message: "Senha redefinida com sucesso." });
+        }
+        else {
+            return res.status(400).json({ message: "A redefinição de senha falhou." });
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        res.status(400).json(error);
     }
 };
