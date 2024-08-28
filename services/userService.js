@@ -1,13 +1,10 @@
-// services/userService.js
-
-// Importa o módulo de promessas do sistema de arquivos e o módulo de caminho
-import fs from 'fs/promises';
-///import path from 'path';
 import { pool } from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 // Serviço para obter todos os usuários
 export const getAllUsersService = async () => {
   const connection = await pool.getConnection();  // Se conecta ao banco de dados
@@ -93,6 +90,7 @@ export const createUserService = async (user) => {
   } finally {
     connection.release();
   }
+<<<<<<< HEAD
 };
 
 // Serviço para atualizar um usuário
@@ -139,4 +137,6 @@ export const updateUserService = async (updates) => {
 
   await writeDB(db);
   return db.users[index];
+=======
+>>>>>>> 8ee791f19e659acc9dc54c3480280a4bd10adb9e
 };

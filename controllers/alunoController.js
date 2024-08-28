@@ -14,7 +14,7 @@ export const createAluno = async (req, res) => {
     try {
         // Chama o serviço para cadastro de aluno
         const newAluno = await createAlunoService(req.body);
-        return res.status(200).json(newAluno);
+        return res.status(201).json(newAluno);
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao cadastrar aluno: ' + error.message });
     }

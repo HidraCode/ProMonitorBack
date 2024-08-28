@@ -5,12 +5,38 @@ services:
     container_name: gestaomonitoria_db
     ports:
       - '3306:3306'
+    hostname: db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: promonitor
     volumes:
       - db_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      app:
+        aliases:
+          - db-alias
+
+  # serviço da aplicação NodeJs
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MYSQL_HOST: db-alias
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: promonitor
+      JWT_SECRET: secret_aqui
+    networks:
+      - app
+    depends_on:
+      - db
 
 volumes:
   db_data:
+
+networks:
+  app:

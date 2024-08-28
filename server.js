@@ -2,6 +2,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import specs from './core/swagger.js';
+import swaggerUI from 'swagger-ui-express';
 
 import userRoutes from './routes/userRoutes.js';
 import alunoRoutes from './routes/alunoRoutes.js';
@@ -27,6 +29,13 @@ app.use('/api/professores', professorRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/editais', editalRoutes);
 app.use('/api/monitores', monitorRoutes);
+
+// Endpoint para verificar se a aplicação está saudável no Render
+app.get('/healthcheck', (req, res) => {
+  res.status(200).send('OK');
+});
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 // Iniciar o servidor
 app.listen(port, () => {
