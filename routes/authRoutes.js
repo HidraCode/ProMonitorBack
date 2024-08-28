@@ -3,10 +3,6 @@ import { authController, passwordRecoveryController, verifyCodeController, passR
 
 const router = express.Router();
 
-<<<<<<< HEAD
-=======
-import { authController } from '../controllers/authController.js';
-
 /**
  * @swagger
  * tags:
@@ -64,7 +60,6 @@ import { authController } from '../controllers/authController.js';
  *       500:
  *         description: Erro interno no servidor
  */
->>>>>>> 8ee791f19e659acc9dc54c3480280a4bd10adb9e
 // Define a rota de autenticação
 router.post('/login', authController);
 router.post('/pass-recovery/verify-code', verifyCodeController);

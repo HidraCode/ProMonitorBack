@@ -90,7 +90,6 @@ export const createUserService = async (user) => {
   } finally {
     connection.release();
   }
-<<<<<<< HEAD
 };
 
 // Serviço para atualizar um usuário
@@ -137,6 +136,5 @@ export const updateUserService = async (updates) => {
 
   await writeDB(db);
   return db.users[index];
-=======
->>>>>>> 8ee791f19e659acc9dc54c3480280a4bd10adb9e
+
 };
