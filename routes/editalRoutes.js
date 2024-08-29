@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllEditais, getAllPublicEditais, getEdital, createEdital, updateEdital } from '../controllers/editalController.js';
+import { getAllEditais, getAllPublicEditais, getEdital, createEdital, updateEdital, getEditalLink } from '../controllers/editalController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -53,7 +53,7 @@ const router = express.Router();
  *       500:
  *         description: Erro interno no servidor
  */
-router.get('/', authorizeRoles('professor'), getAllEditais);
+router.get('/', getAllEditais); //authorizeRoles('professor'), getAllEditais);
 
 /**
  * @swagger
@@ -149,7 +149,7 @@ router.get('/public', getAllPublicEditais);
  *         description: Erro interno no servidor
  */
 router.get('/:codigo_edital', getEdital);
-
+router.get('/:codigo_edital/link', getEditalLink);
 /**
  * @swagger
  * /api/editais:
@@ -204,7 +204,7 @@ router.get('/:codigo_edital', getEdital);
  *       500:
  *         description: Erro interno no servidor
  */
-router.post('/', createEdital, authenticateToken, authorizeRoles('professor'));
+router.post('/', createEdital);//, authenticateToken, authorizeRoles('professor'), createEdital);
 router.put('/:codigo_edital', updateEdital);
 
 export default router;

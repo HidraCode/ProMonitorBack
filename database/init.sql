@@ -19,11 +19,11 @@ CREATE TABLE USUARIO (
 DROP TABLE IF EXISTS EDITAL;
 CREATE TABLE EDITAL (
     codigo_edital INT PRIMARY KEY AUTO_INCREMENT,
-    codigo_professor INT, -- Coordenador que postou o edital
-    data_inicio DATE,
-    data_fim DATE,
+    codigo_professor INT NOT NULL, -- Coordenador que postou o edital
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
     descricao TEXT,
-    link VARCHAR(50),
+    link VARCHAR(50) NOT NULL,
     publico BOOLEAN DEFAULT TRUE, -- Indica se o edital está disponível publicamente
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
