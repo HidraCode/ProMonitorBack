@@ -15,7 +15,7 @@ Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
    git clone -b back-end https://github.com/HidraCode/GestaoMonitoria
    cd GestaoMonitoria
 
-2. **Construir e iniciar o container**
+2. **Construir e iniciar o contêiner**
 
    ```
    docker-compose up --build
@@ -28,3 +28,11 @@ Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
    ```
    docker-compose down
    ```
+
+## Documentação da API
+
+A documentação da API está disponível em uma rota dedicada. Para acessar a documentação, visite:
+
+- `http://localhost:3000/api-docs`
+
+Esta rota fornece informações detalhadas sobre os endpoints da API, parâmetros, exemplos de requisições e respostas. Certifique-se de que os contêineres estejam em execução para acessar a documentação.
