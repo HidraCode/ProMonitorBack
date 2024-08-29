@@ -4,7 +4,7 @@ import {
     getAllInscricoesFromAlunoService,
     getInscricaoService, 
     createInscricaoService
-} from "../services/inscricaoService";
+} from "../services/inscricaoService.js";
 
 // Controlador para obter todas as inscrições
 export const getAllInscricoes = async (req, res) => {

@@ -1,4 +1,8 @@
-import { getAllAlunosService, createAlunoService, updateAlunoService } from "../services/alunoService.js";
+import { 
+    getAllAlunosService, 
+    createAlunoService, 
+    updateAlunoService
+} from "../services/alunoService.js";
 
 export const getAllAlunos = async (req, res) => {
     try {

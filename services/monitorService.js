@@ -5,7 +5,7 @@ export const getAllMonitoresService = async () => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN ALUNO ON MONITOR.codigo_aluno = ALUNO.codigo_aluno JOIN USUARIO ON ALUNO.codigo_usuario = USUARIO.codigo_usuario');
+        const [rows] = await connection.query('SELECT * FROM MONITOR');
         return rows;
     } finally {
         connection.release();
@@ -17,7 +17,7 @@ export const getActiveMonitoresService = async () => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN ALUNO ON MONITOR.codigo_aluno = ALUNO.codigo_aluno JOIN USUARIO ON ALUNO.codigo_usuario = USUARIO.codigo_usuario WHERE MONITOR.ativo = true');
+        const [rows] = await connection.query('SELECT * FROM MONITOR WHERE ativo = true');
         return rows;
     } finally {
         connection.release();
@@ -29,7 +29,7 @@ export const getInactiveMonitoresService = async () => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN ALUNO ON MONITOR.codigo_aluno = ALUNO.codigo_aluno JOIN USUARIO ON ALUNO.codigo_usuario = USUARIO.codigo_usuario WHERE MONITOR.ativo = false');
+        const [rows] = await connection.query('SELECT * FROM MONITOR WHERE ativo = false');
         return rows;
     } finally {
         connection.release();
@@ -41,7 +41,7 @@ export const getMonitorService = async (codigo_monitor) => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN ALUNO ON MONITOR.codigo_aluno = ALUNO.codigo_aluno JOIN USUARIO ON ALUNO.codigo_usuario = USUARIO.codigo_usuario WHERE MONITOR.codigo_monitor = ?', [codigo_monitor]);
+        const [rows] = await connection.query('SELECT * FROM MONITOR WHERE codigo_monitor = ?', [codigo_monitor]);
         return rows;
     } finally {
         connection.release();
@@ -50,21 +50,31 @@ export const getMonitorService = async (codigo_monitor) => {
 
 // Serviço para criar um monitor a partir de um aluno
 export const createMonitorService = async (monitorData) => {
-    const { codigo_aluno, ativo, curso, tipo_monitoria } = monitorData;
+    const { codigo_usuario, ativo, codigo_edital, tipo_monitoria } = monitorData;
 
     const connection = await pool.getConnection();
     try {
+        // Checar se o codigo_usuario pertence a um aluno
+        const [check] = await connection.query(
+            'SELECT * FROM USUARIO WHERE codigo_usuario = ? AND tipo = ?',
+            [codigo_usuario, 'aluno']
+        );
+        // Verificando se algum aluno foi encontrado
+        if (check.length < 1) {
+            throw new Error('Não existe aluno com esse código');
+        }
+
         const query = `
-            INSERT INTO MONITOR (codigo_aluno, ativo, curso, tipo_monitoria)
+            INSERT INTO MONITOR (codigo_aluno, ativo, codigo_edital, tipo_monitoria)
             VALUES (?, ?, ?, ?)
         `;
-        const [result] = await connection.query(query, [codigo_aluno, ativo, curso, tipo_monitoria]);
+        const [result] = await connection.query(query, [codigo_usuario, ativo, codigo_edital, tipo_monitoria]);
 
         return {
             codigo_monitor: result.insertId,
-            codigo_aluno,
+            codigo_usuario,
             ativo,
-            curso,
+            codigo_edital,
             tipo_monitoria,
         };
     } catch (error) {

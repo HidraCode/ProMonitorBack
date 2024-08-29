@@ -11,6 +11,7 @@ import professorRoutes from './routes/professorRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import editalRoutes from './routes/editalRoutes.js';
 import monitorRoutes from './routes/monitorRoutes.js';
+import inscricaoRoutes from './routes/inscricaoRoutes.js';
 
 // Configuração das variáveis de ambiente
 dotenv.config();
@@ -29,6 +30,7 @@ app.use('/api/professores', professorRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/editais', editalRoutes);
 app.use('/api/monitores', monitorRoutes);
+app.use('/api/inscricoes', inscricaoRoutes);
 
 // Endpoint para verificar se a aplicação está saudável no Render
 app.get('/healthcheck', (req, res) => {

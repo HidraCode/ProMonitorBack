@@ -3,59 +3,47 @@ USE promonitor;
 
 DROP TABLE IF exists USUARIO;
 CREATE TABLE USUARIO (
-    codigo_usuario INT PRIMARY KEY auto_increment,
-    nome VARCHAR(100),
-    email VARCHAR(100),
-    telefone VARCHAR(20),
-    endereco VARCHAR(255),
-    data_nascimento DATE,
-    departamento VARCHAR(100), -- departamento associado ao usuário
-    ativo BOOLEAN DEFAULT TRUE,
-    senha VARCHAR(100) NOT NULL
+    codigo_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    tipo ENUM('aluno', 'professor', 'coordenador') NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    matricula VARCHAR(20) NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    senha VARCHAR(100) NOT NULL,
+    UNIQUE(cpf),
+    UNIQUE(matricula)
 );
 
-DROP TABLE IF EXISTS ALUNO;
-CREATE TABLE ALUNO (
-    codigo_aluno INT PRIMARY KEY auto_increment,
-    codigo_usuario INT,
-    comprovante_vinculo TEXT,
-    historico_escolar TEXT,
-    FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario)
-);
-
-DROP TABLE IF EXISTS PROFESSOR;
-CREATE TABLE PROFESSOR (
-    codigo_professor INT PRIMARY KEY auto_increment,
-    codigo_usuario INT,
-    is_coordenador BOOLEAN DEFAULT FALSE, -- indica se o professor é também coordenador
-    FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario)
+DROP TABLE IF EXISTS EDITAL;
+CREATE TABLE EDITAL (
+    codigo_edital INT PRIMARY KEY AUTO_INCREMENT,
+    codigo_professor INT, -- Coordenador que postou o edital
+    data_inicio DATE,
+    data_fim DATE,
+    descricao TEXT,
+    link VARCHAR(50),
+    publico BOOLEAN DEFAULT TRUE, -- Indica se o edital está disponível publicamente
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
 DROP TABLE IF EXISTS MONITOR;
 CREATE TABLE MONITOR ( 
-    codigo_monitor INT PRIMARY KEY auto_increment, 
+    codigo_monitor INT PRIMARY KEY AUTO_INCREMENT, 
     codigo_aluno INT, 
     ativo BOOLEAN, 
-    curso VARCHAR(100), 
-    tipo_monitoria VARCHAR(50), -- 'Bolsista' ou 'Voluntário' 
-    FOREIGN KEY (codigo_aluno) REFERENCES ALUNO(codigo_aluno)
+    codigo_edital INT, 
+    tipo_monitoria ENUM('bolsista', 'voluntario'), -- 'bolsista' ou 'voluntário' 
+    FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario),
+    FOREIGN KEY (codigo_edital) REFERENCES EDITAL(codigo_edital)
 );
 
 -- Outras entidades
 DROP TABLE IF EXISTS DISCIPLINA;
 CREATE TABLE DISCIPLINA (
-    codigo_disciplina INT PRIMARY KEY,
+    codigo_disciplina INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100)
-);
-
-DROP TABLE IF EXISTS EDITAL;
-CREATE TABLE EDITAL (
-    codigo_edital INT PRIMARY KEY auto_increment,
-    codigo_professor INT, -- Coordenador que postou o edital
-    data_postagem DATE,
-    descricao TEXT,
-    publico BOOLEAN DEFAULT TRUE, -- Indica se o edital está disponível publicamente
-    FOREIGN KEY (codigo_professor) REFERENCES PROFESSOR(codigo_professor)
 );
 
 DROP TABLE IF EXISTS INSCRICAO;
@@ -65,7 +53,7 @@ CREATE TABLE INSCRICAO (
     codigo_aluno INT,
     data_inscricao DATE,
     FOREIGN KEY (codigo_edital) REFERENCES EDITAL(codigo_edital),
-    FOREIGN KEY (codigo_aluno) REFERENCES ALUNO(codigo_aluno)
+    FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario)
 );
 
 DROP TABLE IF EXISTS MONITORIA;
@@ -90,7 +78,7 @@ CREATE TABLE TAREFA (
     data_conclusao DATE,
     status VARCHAR(50),
     FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
-    FOREIGN KEY (codigo_professor) REFERENCES PROFESSOR(codigo_professor)
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
 DROP TABLE IF EXISTS DESEMPENHO;
@@ -103,7 +91,7 @@ CREATE TABLE DESEMPENHO (
     data_avaliacao DATE,
     PRIMARY KEY (codigo_desempenho, codigo_monitoria),
     FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
-    FOREIGN KEY (codigo_professor) REFERENCES PROFESSOR(codigo_professor)
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
 DROP TABLE IF EXISTS RELATORIO;

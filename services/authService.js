@@ -5,16 +5,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_aqui';
 
 // Serviço para realizar login
-export const loginUserService = async (email, senha, tipoUsuario) => {
+export const loginUserService = async (email, senha, tipo_usuario) => {
     const connection = await pool.getConnection();
     try {
-        if (tipoUsuario == 'aluno') {
-            console.log(email, senha, tipoUsuario);
-            const [aluno] = await connection.query('SELECT * FROM ALUNO JOIN USUARIO ON ALUNO.codigo_usuario = USUARIO.codigo_usuario WHERE USUARIO.email = ?', [email]);
+        if (tipo_usuario == 'aluno') {
+            console.log(email, senha, tipo_usuario);
+            const [aluno] = await connection.query('SELECT * FROM USUARIO WHERE email = ? AND tipo = ?', [email, tipo_usuario]);
 
             if (aluno.length === 0) {
                 throw new Error('Email ou senha incorretos');
@@ -40,8 +39,8 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
                 token,
             };
         }
-        if (tipoUsuario == 'professor') {
-            const [professor] = await connection.query('SELECT * FROM PROFESSOR JOIN USUARIO ON PROFESSOR.codigo_usuario = USUARIO.codigo_usuario WHERE USUARIO.email = ?', [email]);
+        if (tipo_usuario == 'professor') {
+            const [professor] = await connection.query('SELECT * FROM USUARIO WHERE email = ? AND tipo = ?', [email, tipo_usuario]);
 
             if (professor.length === 0) {
                 throw new Error('Email ou senha incorretos');
@@ -72,4 +71,4 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
     } finally {
         connection.release();
     }
-}
+};

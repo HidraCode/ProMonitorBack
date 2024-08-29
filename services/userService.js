@@ -23,7 +23,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret_aqui';
 // Serviço para criar um novo usuário
 export const createUserService = async (user) => {
   const { nome, email, telefone, endereco, data_nascimento, departamento, senha } = user;
-
+  
   // Encripta a senha
   const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
 

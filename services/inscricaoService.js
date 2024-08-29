@@ -1,4 +1,4 @@
-import { pool } from "../database/db";
+import { pool } from "../database/db.js";
 
 // Serviço para obter todas as inscrições do sistema
 export const getAllInscricoesService = async () => {
@@ -57,7 +57,7 @@ export const getInscricaoService = async (codigo_inscricao) => {
 };
 
 // Serviço para um aluno se inscrever em um edital
-export const createInscricao = async (codigo_edital, codigo_aluno) => {
+export const createInscricaoService = async (codigo_edital, codigo_aluno) => {
     const connection = await pool.getConnection();
 
     try {

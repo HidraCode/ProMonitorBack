@@ -224,6 +224,6 @@ router.post('/', createAluno);
  *       500:
  *         description: Erro interno no servidor
  */
-router.put('/:codigo_usuario', authenticateToken, authorizeRoles('aluno'), updateAluno);
+router.put('/:codigo_usuario', updateAluno); //authenticateToken, authorizeRoles('aluno'), updateAluno);
 
 export default router;
