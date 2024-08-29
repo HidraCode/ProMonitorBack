@@ -4,11 +4,13 @@ import Signup from './src/pages/auth/cadastro/Signup';
 import Login from './src/pages/auth/login/Login';
 import RecuperarSenha from './src/pages/auth/login/RecuperarSenha';
 import VerificarCodigo from './src/pages/auth/login/VerificarCodigo';
+import LandingPage from './src/pages/LandingPage';
 
 function AppRoutes() {
   return (
     <Router>
       <Routes>
+        <Route path='/' element={<LandingPage />} />
         <Route path='/auth/signup' element={<Signup />} />
         <Route path='/auth/login' element={<Login />} />
         <Route path='/auth/pass-recovery' element={<RecuperarSenha />} />
