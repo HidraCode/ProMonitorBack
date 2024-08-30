@@ -75,25 +75,22 @@ export const loginUserService = async (email, senha, tipoUsuario) => {
     }
 }
 
-export const passRecoveryService = async (email) => {
+export const passRecoveryService = async (email, resend) => {
     const connection = await pool.getConnection();
-
     // Criando código de recuperação
     const code = Math.floor(Math.random() * 900000);
-
-    // Formatando para que tenha sempre 4 dígitos
+    // Formatando para que tenha sempre 6 dígitos
     const formattedCode = code.toString().padStart(6, '0');
-
     // Definindo a data de expiração
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora a partir de agora
-
+    const expiresAt = new Date(new Date(Date.now() + 60 * 60 * 1000));
+    // 1 hora a partir de agora
     try {
         // Procura no banco de dados algum usuário com o e-mail recebido do usuário
         const [userData] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
 
-        // Verifica se usuário não existe
+        // Verifica se há usuário cadastrado com o e-mail
         if (userData.length === 0) {
-            throw new Error('Usuário não encontrado.');
+            throw new Error('e-mail não cadastrado.');
         }
 
         // Acessa o primeiro item do array e obtém o código do usuário
@@ -102,39 +99,57 @@ export const passRecoveryService = async (email) => {
         // Verifica se o usuário já possui um código de verificação ativo
         const [existingCode] = await connection.query('SELECT * FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
 
-        // Verifica se o usuário já tem um código enviado ao e-mail
-        if (existingCode.length > 0) {
-            // Deleta do banco de dados para reinserir um novo
-            await connection.query('DELETE FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario])
+        // Se não houver código cadastrado, mas o resend = true, lança um erro
+        if (existingCode.length == 0 && resend) {
+            throw new Error('Usuário não possui código cadastrado.');
         }
 
-        // Insere o código de recuperação no banco de dados
-        await connection.query(
-            'INSERT INTO CODIGO_RECUPERACAO (codigo_usuario, codigo_esperado, expira_em) VALUES (?, ?, ?)',
-            [codigo_usuario, formattedCode, expiresAt]
-        );
+        // Verifica se o usuário já tem um código válido enviado ao e-mail
+        if (existingCode.length > 0) {
+            // Se o código expirou, atualiza do banco de dados com novo código e data de expiração
+            if (new Date(existingCode[0].expiresAt) < new Date()) {
+                await connection.query(
+                    'UPDATE CODIGO_RECUPERACAO SET codigo_esperado = ?, expira_em = ? WHERE codigo_usuario = ?',
+                    [formattedCode, expiresAt, codigo_usuario]
+                );
+                // Envia o e-mail com o novo código de recuperação
+                sendMail(email, formattedCode);
+            }
+            if (resend) {
+                // Se o parâmetro para reenvio está ativado, atualiza apenas a data de expiração
+                await connection.query(
+                    'UPDATE CODIGO_RECUPERACAO SET expira_em = ? WHERE codigo_usuario = ?',
+                    [expiresAt, codigo_usuario]
+                );
+                // Reenvia o e-mail com o código de recuperação existente
+                sendMail(email, existingCode[0].codigo_esperado);
+            } 
+        } else {
+            // Insere o código de recuperação no banco de dados
+            await connection.query(
+                'INSERT INTO CODIGO_RECUPERACAO (codigo_usuario, codigo_esperado, expira_em) VALUES (?, ?, ?)',
+                [codigo_usuario, formattedCode, expiresAt]
+            );
+            // Envia o e-mail com o novo código de recuperação
+            sendMail(email, formattedCode);
+        }
 
-        // Cria o payload  do token com o código do usuário do código de recuperação
-        const payload = { codigo_usuario }
-        console.log(payload)
+        // Cria o payload  do token com o código do usuário e email
+        const payload = { codigo_usuario, email }
         // Gera o token, definindo a duração do token para 1h
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
 
-        // Envia o e-mail com o código de recuperação
-        sendMail(email, formattedCode);
-
-        // Retorna uma mensagem de sucesso ao front-end
-        return { "success": true, "token": token };
-
+        // Retorna uma mensagem de sucesso
+        return { success: true, token: token, email: email};
     } catch (error) {
-        // Lança o erro
-        console.error(error);
-        return { "success": false, "message": error.message };
-    } finally {
+        console.error('Backend Error:', error.message); // detalhes do erro
+        throw new Error(error.message);
+    }  finally {
         // Libera a conexão
         connection.release();
     }
 };
+
 
 export const verifyCodeService = async (token, verification_code) => {
     const connection = await pool.getConnection();
@@ -155,10 +170,10 @@ export const verifyCodeService = async (token, verification_code) => {
 
         // Verifica se o usuário não possui código cadastrado ou se o código expirou
         if (codeData.length === 0) {
-            throw new Error('O usuário não possui códigos de recuperação cadastrados.');
+            throw new Error('o usuário não possui códigos de recuperação cadastrados.');
         }
         else if (new Date(codeData[0].expira_em) < new Date()) {
-            // Deleta o código do banco de dados
+            // Deleta o código do banco de dados caso tenha expirado
             await connection.query('DELETE FROM CODIGO_RECUPERACAO WHERE codigo_usuario = ?', [codigo_usuario]);
             throw new Error('Código expirado.');
         }

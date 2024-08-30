@@ -13,12 +13,17 @@ export const authController = async (req, res) => {
 
 // Controlador para recuperação de senha
 export const passwordRecoveryController = async (req, res) => {
-    const { email } = req.body;
+    const { email, resend } = req.body;
+    console.log (req.body)
+
     try {
-        const response = await passRecoveryService(email);
-        res.json(response);
+        const response = await passRecoveryService(email, resend);
+        if (response.success){
+            return res.status(200).json(response); // Retorna sucesso com os dados
+        }
     } catch (error) {
-        res.status(401).json({ message: 'Erro ao enviar e-mail com o código de recuperação!', error: error.message });
+        console.error('Backend Error:', error.message); // Log de erro no backend
+        return res.status(400).json({ success: false, message: error.message || 'Erro ao recuperar a senha' });
     }
 };
 

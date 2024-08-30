@@ -35,8 +35,8 @@ DROP TABLE IF EXISTS CODIGO_RECUPERACAO;
 CREATE TABLE CODIGO_RECUPERACAO (
     id INT NOT NULL auto_increment,
     codigo_usuario INT NOT NULL UNIQUE,
-    codigo_esperado INT NOT NULL,
-    expira_em DATETIME NOT NULL,
+    codigo_esperado CHAR(6) NOT NULL,
+    expira_em TIMESTAMP NOT NULL,
     PRIMARY KEY (id), -- Define a chave primária
     FOREIGN KEY (codigo_usuario) REFERENCES USUARIO(codigo_usuario) -- Relaciona com a tabela USUARIO
 );
