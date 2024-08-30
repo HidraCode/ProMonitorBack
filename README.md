@@ -12,8 +12,8 @@ Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
 1. **Clone o Repositório**
 
    ```bash
-   git clone -b back-end https://github.com/HidraCode/GestaoMonitoria
-   cd GestaoMonitoria
+   git clone -b main https://github.com/HidraCode/ProMonitorBack
+   cd ProMonitorBack
 
 2. **Construir e iniciar o contêiner**
 
