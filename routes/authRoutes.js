@@ -27,12 +27,12 @@ import { authController } from '../controllers/authController.js';
  *               email:
  *                 type: string
  *                 description: Email do usuário
- *                 example: pedro@gmail.com
+ *                 example: pedro11@gmail.com
  *               senha:
  *                 type: string
  *                 description: Senha do usuário
  *                 example: senhaForte123
- *               tipoUsuario:
+ *               tipo_usuario:
  *                 type: string
  *                 description: Informa se o usuário que está realizando login é aluno ou professor
  *                 example: aluno
@@ -51,7 +51,7 @@ import { authController } from '../controllers/authController.js';
  *                 email:
  *                   type: string
  *                   description: Email do usuário
- *                   example: brennoaraujo@gmail.com
+ *                   example: pedro11@gmail.com
  *                 token:
  *                   type: string
  *                   description: Token de autenticação gerado para o usuário contendo seu papel no sistema (aluno ou professor)

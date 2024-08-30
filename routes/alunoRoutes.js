@@ -15,7 +15,7 @@ const router = express.Router();
  * @swagger
  * /api/alunos:
  *   get:
- *     summary: Recupera todos os alunos
+ *     summary: Retorna uma lista de todos os alunos
  *     tags: [Alunos]
  *     responses:
  *       200:
@@ -27,55 +27,43 @@ const router = express.Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   codigo_usuário:
+ *                   codigo_usuario:
  *                     type: integer
- *                     description: ID do usuário relacionado ao aluno
+ *                     description: ID do usuário
  *                     example: 2
- *                   codigo_aluno:
- *                     type: integer
- *                     description: ID do aluno
- *                     example: 1
+ *                   tipo:
+ *                     type: string
+ *                     description: Tipo de usuário
+ *                     example: aluno
  *                   nome:
  *                     type: string
  *                     description: Nome do aluno
- *                     example: Pedro Silva
+ *                     example: Marcelo Araujo Silva
+ *                   matricula:
+ *                     type: string
+ *                     description: Matrícula do aluno
+ *                     example: 1234567825
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do aluno
+ *                     example: 12312312342
+ *                   telefone:
+ *                     type: string
+ *                     description: Telefone do aluno
+ *                     example: 81095623412
+ *                   data_nascimento:
+ *                     type: string
+ *                     format: date
+ *                     description: Data de nascimento do aluno
+ *                     example: 2005-05-25T00:00:00.000Z
  *                   email:
  *                     type: string
  *                     description: Email do aluno
- *                     example: pedro@gmail.com
- *                   telefone:
- *                     type: string
- *                     format: string
- *                     description: Telefone do aluno
- *                     example: 81995673421
- *                   endereco:
- *                      type: string
- *                      description: Endereço do aluno
- *                      example: Rua nome XYZ
- *                   data_nascimento:
- *                      type: date
- *                      description: Data de nascimento do aluno
- *                      example: 2005-05-25
- *                   departamento:
- *                      type: string
- *                      description: Departamento ao qual o aluno pertence
- *                      example: DC
- *                   ativo:
- *                      type: boolean
- *                      description: Informa se o aluno está ativo
- *                      example: true
+ *                     example: marcelo102@gmail.com
  *                   senha:
- *                      type: string
- *                      description: Senha criptografada do aluno
- *                      example: df$asm%nvdfiasbsalm$
- *                   comprovante_vinculo:
- *                      type: string
- *                      description: Comprovante de vínculo do aluno
- *                      example: Comprovante de vínculo
- *                   historico_escolar:
- *                      type: string
- *                      dscription: Histórico escolar do aluno
- *                      example: Histórico escolar
+ *                     type: string
+ *                     description: Senha criptografada do professor
+ *                     example: $2b$10$b0QT8Bojs5BCxHn1uyiJAO.BGuOgAhcHdzjuzPIo83yhmqucy/NIi
  *       500:
  *         description: Erro interno no servidor
  */
@@ -96,44 +84,36 @@ router.get('/', getAllAlunos);
  *             properties:
  *               nome:
  *                 type: string
- *                 description: Nome do aluno
- *                 example: Brenno Araújo
- *               email:
+ *                 description: Nome completo do aluno
+ *                 example: marcelo silva
+ *               matricula:
  *                 type: string
- *                 description: Email do aluno
- *                 example: brenno@gmail.com
+ *                 description: Matrícula do aluno
+ *                 example: 1234567825
+ *               cpf:
+ *                 type: string
+ *                 description: CPF do aluno
+ *                 example: 12312312342
  *               telefone:
  *                 type: string
  *                 description: Telefone do aluno
- *                 example: "81995953333"
- *               endereco:
- *                 type: string
- *                 description: Endereço do aluno
- *                 example: Rua nome x
+ *                 example: "81095623412"
  *               data_nascimento:
  *                 type: string
  *                 format: date
  *                 description: Data de nascimento do aluno
  *                 example: 2005-05-25
- *               departamento:
+ *               email:
  *                 type: string
- *                 description: Departamento ao qual o aluno pertence
- *                 example: DC
+ *                 description: Email do aluno
+ *                 example: pedro11@gmail.com
  *               senha:
  *                 type: string
- *                 description: Senha de acesso do aluno
- *                 example: senha
- *               comprovante_vinculo:
- *                 type: string
- *                 description: Comprovante de vínculo do aluno com a instituição
- *                 example: comprovante de vinculo
- *               historico_escolar:
- *                 type: string
- *                 description: Histórico escolar do aluno
- *                 example: historico escolar
+ *                 description: Senha para o aluno
+ *                 example: senhaForte123
  *     responses:
  *       201:
- *         description: Aluno criado com sucesso
+ *         description: Aluno cadastrado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -141,22 +121,14 @@ router.get('/', getAllAlunos);
  *               properties:
  *                 codigo_usuario:
  *                   type: integer
- *                   description: ID gerado para o aluno
+ *                   description: Código único do usuário
  *                   example: 1
- *                 nome:
- *                   type: string
- *                   description: Nome do aluno
- *                   example: Brenno Araújo
- *                 email:
- *                   type: string
- *                   description: Email do aluno
- *                   example: brenno@gmail.com
  *                 token:
  *                   type: string
- *                   description: Token de autenticação gerado para o aluno
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJwZWRyb0BnbWFpbC5jb20iLCJpYXQiOjE3MjQ3NjE4MTIsImV4cCI6MTcyNDc2NTQxMn0.o6H8RYDdhrOg0X-SGXKlktKaFhJBsQ12GAb37fO3rgM"
+ *                   description: Token JWT gerado para o aluno
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RpZ29fdXN1YXJpbyI6MSwicm9sZSI6InByb2Zlc3NvciIsImVtYWlsIjoicGVkcm8xMUBnbWFpbC5jb20iLCJpYXQiOjE3MjUwMjM3MDcsImV4cCI6MTcyNTAyNzMwN30.83HkTyhA0o4KuNFZ9_x4Gu-E6Y0QOude8vlI9zmAGQc
  *       400:
- *         description: Erro nos dados fornecidos
+ *         description: Requisição inválida (faltando campos obrigatórios ou formato incorreto)
  *       500:
  *         description: Erro interno no servidor
  */
@@ -166,18 +138,15 @@ router.post('/', createAluno);
  * @swagger
  * /api/alunos/{codigo_usuario}:
  *   put:
- *     summary: Atualiza os dados de um aluno existente
+ *     summary: Atualiza os dados de um aluno
  *     tags: [Alunos]
- *     security:
- *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: codigo_usuario
- *         schema:
- *           type: integer
- *         required: true
- *         description: Código do usuário do aluno a ser atualizado
- *         example: 1
+ *     - in: path
+ *       name: codigo_usuario
+ *       schema: 
+ *         type: integer
+ *       required: true
+ *     description: Código de usuário do aluno
  *     requestBody:
  *       required: true
  *       content:
@@ -185,14 +154,16 @@ router.post('/', createAluno);
  *           schema:
  *             type: object
  *             properties:
- *               telefone:
+ *               nome:
  *                 type: string
- *                 description: Telefone do aluno
- *                 example: "81995953333"
- *               endereco:
+ *                 description: Nome completo do aluno
+ *                 example: Marcelo Araujo Silva
+ *               senha:
  *                 type: string
- *                 description: Endereço do aluno
- *                 example: Rua nome x
+ *                 description: Senha do aluno (obrigatória para qualquer atualização)
+ *                 example: senhaForte123
+ *             required:
+ *               - senha
  *     responses:
  *       200:
  *         description: Dados do aluno atualizados com sucesso
@@ -203,24 +174,16 @@ router.post('/', createAluno);
  *               properties:
  *                 codigo_usuario:
  *                   type: integer
- *                   description: ID do aluno
- *                   example: 1
- *                 telefone:
+ *                   description: Código único do usuário
+ *                   example: 2
+ *                 nome:
  *                   type: string
- *                   description: Telefone do aluno
- *                   example: "81995953333"
- *                 endereco:
- *                   type: string
- *                   description: Endereço do aluno
- *                   example: Rua nome x
+ *                   description: Nome completo do aluno (apenas se alterado)
+ *                   example: Marcelo Araujo Silva
  *       400:
- *         description: Erro nos dados fornecidos
+ *         description: Requisição inválida (faltando senha ou outros erros de validação)
  *       401:
  *         description: Não autorizado (Token inválido ou ausente)
- *       403:
- *         description: Proibido (Permissões insuficientes)
- *       404:
- *         description: Aluno não encontrado
  *       500:
  *         description: Erro interno no servidor
  */

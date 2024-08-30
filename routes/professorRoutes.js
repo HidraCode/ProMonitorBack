@@ -14,20 +14,58 @@ const router = express.Router();
 /**
  * @swagger
  * /api/professores:
- *  get:
- *      summary: Obtém todos os professores cadastrados no sistema
- *      tags: [Professores]
- *      responses: 
- *              200:
- *                  description: Lista de professores.
- *                  content: 
- *                      application/json:
- *                          schema:
- *                              type: array
- *                              items: 
- *                                  type: object
- *                                  properties: 
- *                              
+ *   get:
+ *     summary: Retorna uma lista de todos os professores
+ *     tags: [Professores]
+ *     responses:
+ *       200:
+ *         description: Lista de professores retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   codigo_usuario:
+ *                     type: integer
+ *                     description: ID do usuário
+ *                     example: 2
+ *                   tipo:
+ *                     type: string
+ *                     description: Tipo de usuário
+ *                     example: professor
+ *                   nome:
+ *                     type: string
+ *                     description: Nome do professor
+ *                     example: Marcelo Araujo Silva
+ *                   matricula:
+ *                     type: string
+ *                     description: Matrícula do professor
+ *                     example: 1234567825
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do professor
+ *                     example: 12312312342
+ *                   telefone:
+ *                     type: string
+ *                     description: Telefone do professor
+ *                     example: 81095623412
+ *                   data_nascimento:
+ *                     type: string
+ *                     format: date
+ *                     description: Data de nascimento do professor
+ *                     example: 2005-05-25T00:00:00.000Z
+ *                   email:
+ *                     type: string
+ *                     description: Email do professor
+ *                     example: marcelo102@gmail.com
+ *                   senha:
+ *                     type: string
+ *                     description: Senha criptografada do professor
+ *                     example: $2b$10$b0QT8Bojs5BCxHn1uyiJAO.BGuOgAhcHdzjuzPIo83yhmqucy/NIi
+ *       500:
+ *         description: Erro interno no servidor
  */
 router.get('/', getAllProfessores); //listar professores
 
@@ -46,37 +84,33 @@ router.get('/', getAllProfessores); //listar professores
  *             properties:
  *               nome:
  *                 type: string
- *                 description: Nome do professor
- *                 example: Brenno Araújo
- *               email:
+ *                 description: Nome completo do professor
+ *                 example: marcelo silva
+ *               matricula:
  *                 type: string
- *                 description: Email do professor
- *                 example: brennoaraujo@gmail.com
+ *                 description: Matrícula do professor
+ *                 example: 1234567825
+ *               cpf:
+ *                 type: string
+ *                 description: CPF do professor
+ *                 example: 12312312342
  *               telefone:
  *                 type: string
  *                 description: Telefone do professor
- *                 example: "81995953330"
- *               endereco:
- *                 type: string
- *                 description: Endereço do professor
- *                 example: Rua nome x
+ *                 example: "81095623412"
  *               data_nascimento:
  *                 type: string
  *                 format: date
  *                 description: Data de nascimento do professor
- *                 example: 1984-01-21
- *               departamento:
+ *                 example: 2005-05-25
+ *               email:
  *                 type: string
- *                 description: Departamento ao qual o professor pertence
- *                 example: DC
+ *                 description: Email do professor
+ *                 example: pedro11@gmail.com
  *               senha:
  *                 type: string
- *                 description: Senha de acesso do professor
- *                 example: senha
- *               isCoordenador:
- *                 type: boolean
- *                 description: Indica se o professor é coordenador
- *                 example: false
+ *                 description: Senha para o professor
+ *                 example: senhaForte123
  *     responses:
  *       201:
  *         description: Professor cadastrado com sucesso
@@ -87,26 +121,72 @@ router.get('/', getAllProfessores); //listar professores
  *               properties:
  *                 codigo_usuario:
  *                   type: integer
- *                   description: ID gerado para o professor
- *                   example: 2
- *                 nome:
- *                   type: string
- *                   description: Nome do professor
- *                   example: Brenno Araújo
- *                 email:
- *                   type: string
- *                   description: Email do professor
- *                   example: brennoaraujo@gmail.com
+ *                   description: Código único do usuário (professor)
+ *                   example: 1
  *                 token:
  *                   type: string
- *                   description: Token de autenticação gerado para o professor
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwZWRybzFAZ21haWwuY29tIiwiaWF0IjoxNzI0NzYyNDc5LCJleHAiOjE3MjQ3NjYwNzl9.2ZGEOldTU7bn-a5Ybi7kk3RS29vwsGVK2GPPJY99GC4"
+ *                   description: Token JWT gerado para o professor
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RpZ29fdXN1YXJpbyI6MSwicm9sZSI6InByb2Zlc3NvciIsImVtYWlsIjoicGVkcm8xMUBnbWFpbC5jb20iLCJpYXQiOjE3MjUwMjM3MDcsImV4cCI6MTcyNTAyNzMwN30.83HkTyhA0o4KuNFZ9_x4Gu-E6Y0QOude8vlI9zmAGQc
  *       400:
- *         description: Erro nos dados fornecidos
+ *         description: Requisição inválida (faltando campos obrigatórios ou formato incorreto)
  *       500:
  *         description: Erro interno no servidor
  */
 router.post('/', createProfessor); //Criar professores
+
+/**
+ * @swagger
+ * /api/professores/{codigo_usuario}:
+ *   put:
+ *     summary: Atualiza os dados de um professor
+ *     tags: [Professores]
+ *     parameters:
+ *     - in: path
+ *       name: codigo_usuario
+ *       schema: 
+ *         type: integer
+ *       required: true
+ *     description: Código de usuário do professor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *                 description: Nome completo do professor
+ *                 example: Marcelo Araujo Silva
+ *               senha:
+ *                 type: string
+ *                 description: Senha do professor (obrigatória para qualquer atualização)
+ *                 example: senhaForte123
+ *             required:
+ *               - senha
+ *     responses:
+ *       200:
+ *         description: Dados do professor atualizados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 codigo_usuario:
+ *                   type: integer
+ *                   description: Código único do usuário (professor)
+ *                   example: 2
+ *                 nome:
+ *                   type: string
+ *                   description: Nome completo do professor (apenas se alterado)
+ *                   example: Marcelo Araujo Silva
+ *       400:
+ *         description: Requisição inválida (faltando senha ou outros erros de validação)
+ *       401:
+ *         description: Não autorizado (Token inválido ou ausente)
+ *       500:
+ *         description: Erro interno no servidor
+ */
 router.put('/:codigo_usuario', updateProfessor);//authenticateToken, authorizeRoles('professor'), updateProfessor);//Atualizar professor
 
 export default router;
