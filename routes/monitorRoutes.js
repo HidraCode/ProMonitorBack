@@ -24,8 +24,6 @@ const router = express.Router();
  *   get:
  *     summary: Retorna uma lista de todos os monitores
  *     tags: [Monitores]
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de monitores retornada com sucesso
@@ -38,67 +36,61 @@ const router = express.Router();
  *                 properties:
  *                   codigo_monitor:
  *                     type: integer
- *                     description: Código do monitor
+ *                     description: Código único do monitor
  *                     example: 1
  *                   codigo_aluno:
  *                     type: integer
  *                     description: Código do aluno associado ao monitor
- *                     example: 1
+ *                     example: 2
  *                   ativo:
- *                     type: boolean
+ *                     type: integer
  *                     description: Status do monitor (1 para ativo, 0 para inativo)
- *                     example: true
- *                   curso:
- *                     type: string
- *                     description: Curso ao qual o monitor pertence
- *                     example: BCC
+ *                     example: 1
+ *                   codigo_edital:
+ *                     type: integer
+ *                     description: Código do edital ao qual o monitor está associado
+ *                     example: 1
  *                   tipo_monitoria:
  *                     type: string
- *                     description: Tipo de monitoria (Bolsista ou Voluntário)
- *                     example: Bolsista
+ *                     description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntario')
+ *                     example: bolsista
  *                   codigo_usuario:
  *                     type: integer
- *                     description: Código do usuário do monitor
- *                     example: 1
- *                   comprovante_vinculo:
+ *                     description: Código de usuário do aluno associado ao monitor
+ *                     example: 2
+ *                   tipo:
  *                     type: string
- *                     description: Comprovante de vínculo do monitor com a instituição
- *                     example: comprovante de vinculo
- *                   historico_escolar:
- *                     type: string
- *                     description: Histórico escolar do monitor
- *                     example: historico escolar
+ *                     description: Tipo de usuário (por exemplo, 'aluno', 'professor')
+ *                     example: aluno
  *                   nome:
  *                     type: string
  *                     description: Nome do monitor
- *                     example: Brenno Araújo
- *                   email:
+ *                     example: Pedro
+ *                   matricula:
  *                     type: string
- *                     description: Email do monitor
- *                     example: brenno@gmail.com
+ *                     description: Matrícula do monitor
+ *                     example: 1234567821
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do monitor
+ *                     example: 12312312112
  *                   telefone:
  *                     type: string
  *                     description: Telefone do monitor
- *                     example: "81995953333"
- *                   endereco:
- *                     type: string
- *                     description: Endereço do monitor
- *                     example: Rua nome x
+ *                     example: 81995623412
  *                   data_nascimento:
  *                     type: string
- *                     format: date
+ *                     format: date-time
  *                     description: Data de nascimento do monitor
  *                     example: 2005-05-25T00:00:00.000Z
- *                   departamento:
+ *                   email:
  *                     type: string
- *                     description: Departamento ao qual o monitor pertence
- *                     example: DC
+ *                     description: Email do monitor
+ *                     example: pedro1@gmail.com
  *                   senha:
  *                     type: string
  *                     description: Senha criptografada do monitor
- *                     example: $2b$10$cmHoGxgCqChO0fNLg0INyO79UQEBkqwbyz7qFM27Vk8UZrm0sYk0i
- *       401:
- *         description: Não autorizado (Token inválido ou ausente)
+ *                     example: $2b$10$.wuAmOqHCCOWUxbCiGF4zOsMzlJ7VX0GKXa4MBLS8wm0cLuO.zP5K
  *       500:
  *         description: Erro interno no servidor
  */
@@ -110,8 +102,6 @@ router.get('/', getAllMonitores);//authenticateToken, getAllMonitores);
  *   get:
  *     summary: Retorna uma lista de todos os monitores ativos
  *     tags: [Monitores]
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de monitores ativos retornada com sucesso
@@ -124,67 +114,61 @@ router.get('/', getAllMonitores);//authenticateToken, getAllMonitores);
  *                 properties:
  *                   codigo_monitor:
  *                     type: integer
- *                     description: Código do monitor
+ *                     description: Código único do monitor
  *                     example: 1
  *                   codigo_aluno:
  *                     type: integer
  *                     description: Código do aluno associado ao monitor
- *                     example: 1
+ *                     example: 2
  *                   ativo:
- *                     type: boolean
- *                     description: Status do monitor (1 para ativo, 0 para inativo)
- *                     example: true
- *                   curso:
- *                     type: string
- *                     description: Curso ao qual o monitor pertence
- *                     example: BCC
+ *                     type: integer
+ *                     description: Status do monitor (1 para ativo)
+ *                     example: 1
+ *                   codigo_edital:
+ *                     type: integer
+ *                     description: Código do edital ao qual o monitor está associado
+ *                     example: 1
  *                   tipo_monitoria:
  *                     type: string
- *                     description: Tipo de monitoria (Bolsista ou Voluntário)
- *                     example: Bolsista
+ *                     description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
+ *                     example: bolsista
  *                   codigo_usuario:
  *                     type: integer
  *                     description: Código do usuário do monitor
- *                     example: 1
- *                   comprovante_vinculo:
+ *                     example: 2
+ *                   tipo:
  *                     type: string
- *                     description: Comprovante de vínculo do monitor com a instituição
- *                     example: comprovante de vinculo
- *                   historico_escolar:
- *                     type: string
- *                     description: Histórico escolar do monitor
- *                     example: historico escolar
+ *                     description: Tipo de usuário (por exemplo, 'aluno', 'professor')
+ *                     example: aluno
  *                   nome:
  *                     type: string
  *                     description: Nome do monitor
- *                     example: Brenno Araújo
- *                   email:
+ *                     example: Pedro
+ *                   matricula:
  *                     type: string
- *                     description: Email do monitor
- *                     example: brenno@gmail.com
+ *                     description: Matrícula do monitor
+ *                     example: 1234567821
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do monitor
+ *                     example: 12312312112
  *                   telefone:
  *                     type: string
  *                     description: Telefone do monitor
- *                     example: "81995953333"
- *                   endereco:
- *                     type: string
- *                     description: Endereço do monitor
- *                     example: Rua nome x
+ *                     example: 81995623412
  *                   data_nascimento:
  *                     type: string
- *                     format: date
+ *                     format: date-time
  *                     description: Data de nascimento do monitor
  *                     example: 2005-05-25T00:00:00.000Z
- *                   departamento:
+ *                   email:
  *                     type: string
- *                     description: Departamento ao qual o monitor pertence
- *                     example: DC
+ *                     description: Email do monitor
+ *                     example: pedro1@gmail.com
  *                   senha:
  *                     type: string
  *                     description: Senha criptografada do monitor
- *                     example: $2b$10$cmHoGxgCqChO0fNLg0INyO79UQEBkqwbyz7qFM27Vk8UZrm0sYk0i
- *       401:
- *         description: Não autorizado (Token inválido ou ausente)
+ *                     example: $2b$10$.wuAmOqHCCOWUxbCiGF4zOsMzlJ7VX0GKXa4MBLS8wm0cLuO.zP5K
  *       500:
  *         description: Erro interno no servidor
  */
@@ -208,65 +192,61 @@ router.get('/active', getActiveMonitores);//authenticateToken, getActiveMonitore
  *                 properties:
  *                   codigo_monitor:
  *                     type: integer
- *                     description: Código do monitor
- *                     example: 2
+ *                     description: Código único do monitor
+ *                     example: 1
  *                   codigo_aluno:
  *                     type: integer
  *                     description: Código do aluno associado ao monitor
  *                     example: 2
  *                   ativo:
- *                     type: boolean
+ *                     type: integer
  *                     description: Status do monitor (0 para inativo)
- *                     example: false
- *                   curso:
- *                     type: string
- *                     description: Curso ao qual o monitor pertence
- *                     example: BCC
+ *                     example: 0
+ *                   codigo_edital:
+ *                     type: integer
+ *                     description: Código do edital ao qual o monitor está associado
+ *                     example: 1
  *                   tipo_monitoria:
  *                     type: string
- *                     description: Tipo de monitoria (Bolsista ou Voluntário)
- *                     example: Bolsista
+ *                     description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
+ *                     example: voluntário
  *                   codigo_usuario:
  *                     type: integer
  *                     description: Código do usuário do monitor
  *                     example: 2
- *                   comprovante_vinculo:
+ *                   tipo:
  *                     type: string
- *                     description: Comprovante de vínculo do monitor com a instituição
- *                     example: comprovante de vinculo
- *                   historico_escolar:
- *                     type: string
- *                     description: Histórico escolar do monitor
- *                     example: historico escolar
+ *                     description: Tipo de usuário (por exemplo, 'aluno', 'professor')
+ *                     example: aluno
  *                   nome:
  *                     type: string
  *                     description: Nome do monitor
- *                     example: João Silva
- *                   email:
+ *                     example: Pedro
+ *                   matricula:
  *                     type: string
- *                     description: Email do monitor
- *                     example: joao@gmail.com
+ *                     description: Matrícula do monitor
+ *                     example: 1234567821
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do monitor
+ *                     example: 12312312112
  *                   telefone:
  *                     type: string
  *                     description: Telefone do monitor
- *                     example: "81995954444"
- *                   endereco:
- *                     type: string
- *                     description: Endereço do monitor
- *                     example: Rua nome y
+ *                     example: 81995623412
  *                   data_nascimento:
  *                     type: string
- *                     format: date
+ *                     format: date-time
  *                     description: Data de nascimento do monitor
- *                     example: 2004-06-15T00:00:00.000Z
- *                   departamento:
+ *                     example: 2005-05-25T00:00:00.000Z
+ *                   email:
  *                     type: string
- *                     description: Departamento ao qual o monitor pertence
- *                     example: DC
+ *                     description: Email do monitor
+ *                     example: pedro1@gmail.com
  *                   senha:
  *                     type: string
  *                     description: Senha criptografada do monitor
- *                     example: $2b$10$cmHoGxgCqChO0fNLg0INyO79UQEBkqwbyz7qFM27Vk8UZrm0sYk0i
+ *                     example: $2b$10$.wuAmOqHCCOWUxbCiGF4zOsMzlJ7VX0GKXa4MBLS8wm0cLuO.zP5K
  *       500:
  *         description: Erro interno no servidor
  */
@@ -279,12 +259,13 @@ router.get('/inactive', getInactiveMonitores);
  *     summary: Retorna os detalhes de um monitor específico
  *     tags: [Monitores]
  *     parameters:
- *       - in: path
- *         name: codigo_monitor
+ *       - name: codigo_monitor
+ *         in: path
+ *         required: true
+ *         description: Código único do monitor para identificar o monitor específico
  *         schema:
  *           type: integer
- *         required: true
- *         description: Código do monitor
+ *           example: 1
  *     responses:
  *       200:
  *         description: Detalhes do monitor retornados com sucesso
@@ -295,65 +276,61 @@ router.get('/inactive', getInactiveMonitores);
  *               properties:
  *                 codigo_monitor:
  *                   type: integer
- *                   description: Código do monitor
+ *                   description: Código único do monitor
  *                   example: 1
  *                 codigo_aluno:
  *                   type: integer
  *                   description: Código do aluno associado ao monitor
- *                   example: 1
+ *                   example: 2
  *                 ativo:
- *                   type: boolean
+ *                   type: integer
  *                   description: Status do monitor (1 para ativo, 0 para inativo)
- *                   example: true
- *                 curso:
- *                   type: string
- *                   description: Curso ao qual o monitor pertence
- *                   example: BCC
+ *                   example: 1
+ *                 codigo_edital:
+ *                   type: integer
+ *                   description: Código do edital ao qual o monitor está associado
+ *                   example: 1
  *                 tipo_monitoria:
  *                   type: string
- *                   description: Tipo de monitoria (Bolsista ou Voluntário)
- *                   example: Bolsista
+ *                   description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
+ *                   example: bolsista
  *                 codigo_usuario:
  *                   type: integer
- *                   description: Código do usuário do monitor
- *                   example: 1
- *                 comprovante_vinculo:
+ *                   description: Código de usuário do aluno associado ao monitor
+ *                   example: 2
+ *                 tipo:
  *                   type: string
- *                   description: Comprovante de vínculo do monitor com a instituição
- *                   example: comprovante de vinculo
- *                 historico_escolar:
- *                   type: string
- *                   description: Histórico escolar do monitor
- *                   example: historico escolar
+ *                   description: Tipo de usuário (por exemplo, 'aluno', 'professor')
+ *                   example: aluno
  *                 nome:
  *                   type: string
  *                   description: Nome do monitor
- *                   example: Brenno Araújo
- *                 email:
+ *                   example: Pedro
+ *                 matricula:
  *                   type: string
- *                   description: Email do monitor
- *                   example: brenno@gmail.com
+ *                   description: Matrícula do monitor
+ *                   example: 1234567821
+ *                 cpf:
+ *                   type: string
+ *                   description: CPF do monitor
+ *                   example: 12312312112
  *                 telefone:
  *                   type: string
  *                   description: Telefone do monitor
- *                   example: "81995953333"
- *                 endereco:
- *                   type: string
- *                   description: Endereço do monitor
- *                   example: Rua nome x
+ *                   example: 81995623412
  *                 data_nascimento:
  *                   type: string
- *                   format: date
+ *                   format: date-time
  *                   description: Data de nascimento do monitor
  *                   example: 2005-05-25T00:00:00.000Z
- *                 departamento:
+ *                 email:
  *                   type: string
- *                   description: Departamento ao qual o monitor pertence
- *                   example: DC
+ *                   description: Email do monitor
+ *                   example: pedro1@gmail.com
  *                 senha:
  *                   type: string
  *                   description: Senha criptografada do monitor
- *                   example: $2b$10$cmHoGxgCqChO0fNLg0INyO79UQEBkqwbyz7qFM27Vk8UZrm0sYk0i
+ *                   example: $2b$10$.wuAmOqHCCOWUxbCiGF4zOsMzlJ7VX0GKXa4MBLS8wm0cLuO.zP5K
  *       404:
  *         description: Monitor não encontrado
  *       500:
@@ -374,22 +351,22 @@ router.get('/:codigo_monitor', getMonitor);
  *           schema:
  *             type: object
  *             properties:
- *               codigo_aluno:
+ *               codigo_usuario:
  *                 type: integer
- *                 description: Código do aluno associado ao monitor
- *                 example: 1
+ *                 description: Código do usuário associado ao monitor
+ *                 example: 2
  *               ativo:
  *                 type: boolean
  *                 description: Status do monitor (true para ativo, false para inativo)
  *                 example: true
- *               curso:
- *                 type: string
- *                 description: Curso ao qual o monitor pertence
- *                 example: BCC
+ *               codigo_edital:
+ *                 type: integer
+ *                 description: Código do edital ao qual o monitor está associado
+ *                 example: 1
  *               tipo_monitoria:
  *                 type: string
- *                 description: Tipo de monitoria (Bolsista ou Voluntário)
- *                 example: Bolsista
+ *                 description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
+ *                 example: voluntario
  *     responses:
  *       201:
  *         description: Monitor criado com sucesso
@@ -400,31 +377,87 @@ router.get('/:codigo_monitor', getMonitor);
  *               properties:
  *                 codigo_monitor:
  *                   type: integer
- *                   description: Código do monitor criado
- *                   example: 1
- *                 codigo_aluno:
+ *                   description: Código único do novo monitor
+ *                   example: 3
+ *                 codigo_usuario:
  *                   type: integer
- *                   description: Código do aluno associado ao monitor
- *                   example: 1
+ *                   description: Código do usuário associado ao monitor
+ *                   example: 2
  *                 ativo:
- *                   type: true
- *                   description: Status do monitor
+ *                   type: boolean
+ *                   description: Status do monitor (true para ativo)
  *                   example: true
- *                 curso:
- *                  type: string
- *                  description: Curso ao qual o monitor pertence
- *                  example: BCC
+ *                 codigo_edital:
+ *                   type: integer
+ *                   description: Código do edital ao qual o monitor está associado
+ *                   example: 1
  *                 tipo_monitoria:
- *                  type: string
- *                  description: Tipo de monitoria (Bolsista ou Voluntário)
- *                  example: Bolsista
+ *                   type: string
+ *                   description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
+ *                   example: voluntario
  *       400:
- *         description: Erro na requisição (por exemplo, dados ausentes ou inválidos)
+ *         description: Requisição mal formatada ou dados inválidos
  *       500:
  *         description: Erro interno no servidor
  */
 router.post('/create', createMonitor);
 
+/**
+ * @swagger
+ * /api/monitores/{codigo_monitor}:
+ *   put:
+ *     summary: Atualiza as informações de um monitor
+ *     tags: [Monitores]
+ *     parameters:
+ *       - in: path
+ *         name: codigo_monitor
+ *         required: true
+ *         description: Código do monitor a ser atualizado
+ *         schema:
+ *           type: integer
+ *           example: 2
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ativo:
+ *                 type: boolean
+ *                 description: Status do monitor (true para ativo, false para inativo)
+ *                 example: true
+ *               tipo_monitoria:
+ *                 type: string
+ *                 description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
+ *                 example: bolsista
+ *     responses:
+ *       200:
+ *         description: Informações do monitor atualizadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 codigo_monitor:
+ *                   type: integer
+ *                   description: Código único do monitor
+ *                   example: 2
+ *                 ativo:
+ *                   type: boolean
+ *                   description: Status atualizado do monitor (true para ativo)
+ *                   example: true
+ *                 tipo_monitoria:
+ *                   type: string
+ *                   description: Tipo de monitoria atualizado (por exemplo, 'bolsista', 'voluntário')
+ *                   example: bolsista
+ *       400:
+ *         description: Requisição mal formatada ou dados inválidos
+ *       404:
+ *         description: Monitor não encontrado
+ *       500:
+ *         description: Erro interno no servidor
+ */
 router.put('/:codigo_monitor', updateMonitor);
 
 export default router;

@@ -5,7 +5,7 @@ export const getAllMonitoresService = async () => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR');
+        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN USUARIO ON MONITOR.codigo_aluno = USUARIO.codigo_usuario');
         return rows;
     } finally {
         connection.release();
@@ -17,7 +17,7 @@ export const getActiveMonitoresService = async () => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR WHERE ativo = true');
+        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN USUARIO ON MONITOR.codigo_aluno = USUARIO.codigo_usuario WHERE MONITOR.ativo = true');
         return rows;
     } finally {
         connection.release();
@@ -29,7 +29,7 @@ export const getInactiveMonitoresService = async () => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR WHERE ativo = false');
+        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN USUARIO ON MONITOR.codigo_aluno = USUARIO.codigo_usuario WHERE MONITOR.ativo = false');
         return rows;
     } finally {
         connection.release();
@@ -41,7 +41,7 @@ export const getMonitorService = async (codigo_monitor) => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM MONITOR WHERE codigo_monitor = ?', [codigo_monitor]);
+        const [rows] = await connection.query('SELECT * FROM MONITOR JOIN USUARIO ON MONITOR.codigo_aluno = USUARIO.codigo_usuario WHERE MONITOR.codigo_monitor = ?', [codigo_monitor]);
         return rows;
     } finally {
         connection.release();
