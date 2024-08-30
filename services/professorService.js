@@ -101,6 +101,12 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
     try {
         await connection.beginTransaction(); // Inicia a transação
 
+        // Verifica a senha do professor
+        const [professor] = await connection.query('SELECT senha FROM USUARIO WHERE codigo_usuario = ?', [codigo_usuario]);
+        if (professor.length === 0 || !(await bcrypt.compare(senha, professor[0].senha))) {
+            throw new Error('Senha incorreta!');
+        }
+
         // Construção dinâmica da consulta SQL
         let updateUsuarioQuery = 'UPDATE USUARIO SET ';
         let updateUsuarioValues = [];
@@ -135,11 +141,6 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
             updateUsuarioQuery += 'data_nascimento = ?, ';
             updateUsuarioValues.push(data_nascimento);
         }
-        if (senha) {
-            const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
-            updateUsuarioQuery += 'senha = ?, ';
-            updateUsuarioValues.push(hashedPassword);
-        }
 
         // Remove a última vírgula e adiciona a cláusula WHERE
         updateUsuarioQuery = updateUsuarioQuery.slice(0, -2) + ' WHERE codigo_usuario = ?';
@@ -150,7 +151,7 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
 
         await connection.commit(); // Confirma a transação
 
-        return { codigo_usuario, nome, matricula, cpf, telefone, data_nascimento, email, senha };
+        return { codigo_usuario, nome, matricula, cpf, telefone, data_nascimento, email };
     } catch (error) {
         await connection.rollback(); // Reverte a transação em caso de erro
         throw new Error('Erro ao atualizar professor: ' + error.message);
