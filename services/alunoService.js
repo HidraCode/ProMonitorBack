@@ -101,6 +101,12 @@ export const updateAlunoService = async (codigo_usuario, alunoData) => {
     try {
         await connection.beginTransaction(); // Inicia a transação
 
+        // Verifica a senha do aluno
+        const [aluno] = await connection.query('SELECT senha FROM USUARIO WHERE codigo_usuario = ?', [codigo_usuario]);
+        if (aluno.length === 0 || !(await bcrypt.compare(senha, aluno[0].senha))) {
+            throw new Error('Senha incorreta!');
+        }
+
         // Construção dinâmica da consulta SQL
         let updateUsuarioQuery = 'UPDATE USUARIO SET ';
         let updateUsuarioValues = [];
@@ -135,11 +141,6 @@ export const updateAlunoService = async (codigo_usuario, alunoData) => {
             updateUsuarioQuery += 'data_nascimento = ?, ';
             updateUsuarioValues.push(data_nascimento);
         }
-        if (senha) {
-            const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
-            updateUsuarioQuery += 'senha = ?, ';
-            updateUsuarioValues.push(hashedPassword);
-        }
 
         // Remove a última vírgula e adiciona a cláusula WHERE
         updateUsuarioQuery = updateUsuarioQuery.slice(0, -2) + ' WHERE codigo_usuario = ?';
@@ -150,7 +151,7 @@ export const updateAlunoService = async (codigo_usuario, alunoData) => {
 
         await connection.commit(); // Confirma a transação
 
-        return { codigo_usuario, nome, matricula, cpf, telefone, data_nascimento, email, senha };
+        return { codigo_usuario, nome, matricula, cpf, telefone, data_nascimento, email };
     } catch (error) {
         await connection.rollback(); // Reverte a transação em caso de erro
         throw new Error('Erro ao atualizar aluno: ' + error.message);

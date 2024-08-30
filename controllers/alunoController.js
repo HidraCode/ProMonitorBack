@@ -32,6 +32,6 @@ export const updateAluno = async (req, res) => {
         const updatedAluno = await updateAlunoService(codigo_usuario, alunoData);
         return res.status(200).json(updatedAluno);
     } catch (error) {
-        return res.status(500).json({ message: 'Erro ao cadastrar aluno: ' + error.message });
+        return res.status(500).json({ message: 'Erro ao atualizar aluno: ' + error.message });
     }
 };
