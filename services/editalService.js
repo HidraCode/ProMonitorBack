@@ -55,7 +55,7 @@ export const getEditalLinkService = async (codigo_edital) => {
 
 // Serviço para criar edital
 export const createEditalService = async (editalData) => {
-    const { codigo_professor, data_inicio, data_fim, descricao, link, publico } = editalData;
+    const { codigo_professor, titulo, data_inicio, data_fim, descricao, link, publico } = editalData;
 
     const connection = await pool.getConnection();
     try {
@@ -67,16 +67,17 @@ export const createEditalService = async (editalData) => {
 
         // Insere os dados do edital na tabela EDITAL
         const query = `
-            INSERT INTO EDITAL (codigo_professor, data_inicio, data_fim, descricao, link, publico)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO EDITAL (codigo_professor, titulo, data_inicio, data_fim, descricao, link, publico)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `
 
-        const values = [codigo_professor, data_inicio, data_fim, descricao, link, publico];
+        const values = [codigo_professor, titulo, data_inicio, data_fim, descricao, link, publico];
         const [result] = await connection.query(query, values);
 
         return {
             codigo_edital: result.insertId,
             codigo_professor,
+            titulo,
             data_inicio,
             data_fim,
             descricao,
@@ -92,7 +93,7 @@ export const createEditalService = async (editalData) => {
 
 // Serviço para atualizar as informações de um edital
 export const updateEditalService = async (codigo_edital, editalData) => {
-    const { data_inicio, data_fim, descricao, link, publico } = editalData;
+    const { titulo, data_inicio, data_fim, descricao, link, publico } = editalData;
 
     const connection = await pool.getConnection();
     try {
@@ -102,6 +103,10 @@ export const updateEditalService = async (codigo_edital, editalData) => {
         let updateEditalQuery = 'UPDATE EDITAL SET ';
         let updateEditalValues = [];
         
+        if (titulo) {
+            updateEditalQuery += 'titulo = ?, ';
+            updateEditalValues.push(titulo);
+        }
         if (data_inicio) {
             updateEditalQuery += 'data_inicio = ?, ';
             updateEditalValues.push(data_inicio);
@@ -131,7 +136,7 @@ export const updateEditalService = async (codigo_edital, editalData) => {
         await connection.query(updateEditalQuery, updateEditalValues);
 
         await connection.commit(); // Confirma a transação
-        return { codigo_edital, data_inicio, data_fim, descricao, link, publico };
+        return { titulo, codigo_edital, data_inicio, data_fim, descricao, link, publico };
     } catch (error) {
         throw new Error('Erro ao atualizar edital: ' + error.message);
     } finally {

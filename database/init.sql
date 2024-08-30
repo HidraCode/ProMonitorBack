@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS EDITAL;
 CREATE TABLE EDITAL (
     codigo_edital INT PRIMARY KEY AUTO_INCREMENT,
     codigo_professor INT NOT NULL, -- Coordenador que postou o edital
+    titulo VARCHAR(40) NOT NULL,
     data_inicio DATE NOT NULL,
     data_fim DATE NOT NULL,
     descricao TEXT,
