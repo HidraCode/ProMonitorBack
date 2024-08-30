@@ -61,6 +61,24 @@ export const createInscricaoService = async (codigo_edital, codigo_aluno) => {
     const connection = await pool.getConnection();
 
     try {
+        // Verifica se existe um edital com o codigo informado
+        const [editalExistente] = await connection.query('SELECT * FROM EDITAL WHERE codigo_edital = ?', [codigo_edital]);
+        if (editalExistente.length === 0) {
+            throw new Error('Não existe edital com esse código');
+        }
+        
+        // Verifica se existe um aluno com esse codigo
+        const [aluno] = await connection.query('SELECT * from USUARIO WHERE codigo_usuario = ? AND tipo = ?', [codigo_aluno, 'aluno']);
+        if (aluno.length === 0) {
+            throw new Error('Não existe aluno com esse código!');
+        }
+
+        // Verifica se o aluno já está inscrito nesse edital
+        const [inscricaoExistente] = await connection.query('SELECT * FROM INSCRICAO WHERE codigo_edital = ? AND codigo_aluno = ?', [codigo_edital, codigo_aluno]);
+        if (inscricaoExistente.length > 0) {
+            throw new Error('O aluno já está inscrito nesse edital!');
+        }
+
         const query = `
             INSERT INTO INSCRICAO
             (codigo_edital, codigo_aluno, data_inscricao, estado)
