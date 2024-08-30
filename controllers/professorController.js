@@ -1,4 +1,8 @@
-import { getAllProfessoresService, createProfessorService, updateProfessorService } from "../services/professorService.js";
+import { 
+    getAllProfessoresService, 
+    createProfessorService, 
+    updateProfessorService 
+} from "../services/professorService.js";
 
 // Controlador para obter todos os professores
 export const getAllProfessores = async (req, res) => {

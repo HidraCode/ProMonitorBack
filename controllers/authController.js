@@ -2,11 +2,13 @@ import { loginUserService, verifyCodeService, passResetService, passRecoveryServ
 
 // Controlador para login de usuário
 export const authController = async (req, res) => {
-    const { email, senha, tipoUsuario } = req.body;
+    // Recupera email e senha no corpo da requisição
+    const { email, senha, tipo_usuario } = req.body;
     try {
-        const response = await loginUserService(email, senha, tipoUsuario);
-        res.json(response);  // Retorna a resposta do serviço
-    } catch (error) {
+        // Chama o serviço de login
+        const user = await loginUserService(email, senha, tipo_usuario);
+        res.json(user);
+    } catch (error){
         res.status(401).json({ message: 'Credenciais inválidas!', error: error.message });
     }
 };

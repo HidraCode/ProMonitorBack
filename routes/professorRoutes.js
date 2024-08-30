@@ -107,6 +107,6 @@ router.get('/', getAllProfessores); //listar professores
  *         description: Erro interno no servidor
  */
 router.post('/', createProfessor); //Criar professores
-router.put('/:codigo_usuario', authenticateToken, authorizeRoles('professor'), updateProfessor);//Atualizar professor
+router.put('/:codigo_usuario', updateProfessor);//authenticateToken, authorizeRoles('professor'), updateProfessor);//Atualizar professor
 
 export default router;

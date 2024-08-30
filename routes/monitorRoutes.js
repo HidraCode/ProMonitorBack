@@ -102,7 +102,7 @@ const router = express.Router();
  *       500:
  *         description: Erro interno no servidor
  */
-router.get('/', authenticateToken, getAllMonitores);
+router.get('/', getAllMonitores);//authenticateToken, getAllMonitores);
 
 /**
  * @swagger
@@ -188,7 +188,7 @@ router.get('/', authenticateToken, getAllMonitores);
  *       500:
  *         description: Erro interno no servidor
  */
-router.get('/active', authenticateToken, getActiveMonitores);
+router.get('/active', getActiveMonitores);//authenticateToken, getActiveMonitores);
 
 /**
  * @swagger
@@ -424,6 +424,7 @@ router.get('/:codigo_monitor', getMonitor);
  *         description: Erro interno no servidor
  */
 router.post('/create', createMonitor);
-//router.put('/:codigo_monitor', updateMonitor);
+
+router.put('/:codigo_monitor', updateMonitor);
 
 export default router;
