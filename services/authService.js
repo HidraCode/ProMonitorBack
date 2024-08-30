@@ -7,6 +7,7 @@ import nodemailer from 'nodemailer';
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret_aqui';
+const SALT_ROUNDS = 10;
 
 // Serviço para realizar login
 export const loginUserService = async (email, senha, tipo_usuario) => {
@@ -122,7 +123,7 @@ export const passRecoveryService = async (email, resend) => {
                 );
                 // Reenvia o e-mail com o código de recuperação existente
                 sendMail(email, existingCode[0].codigo_esperado);
-            } 
+            }
         } else {
             // Insere o código de recuperação no banco de dados
             await connection.query(
@@ -139,11 +140,11 @@ export const passRecoveryService = async (email, resend) => {
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
 
         // Retorna uma mensagem de sucesso
-        return { success: true, token: token, email: email};
+        return { success: true, token: token, email: email };
     } catch (error) {
         console.error('Backend Error:', error.message); // detalhes do erro
         throw new Error(error.message);
-    }  finally {
+    } finally {
         // Libera a conexão
         connection.release();
     }
@@ -215,8 +216,11 @@ export const passResetService = async (token, values) => {
 
         // Passa para verificar se a senha e a confirmação da senha são iguais
         if (senha === confirmar_senha) {
+
+            // Encripta a senha
+            const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
             // Altera a senha do usuário no banco de dados
-            await connection.query('UPDATE USUARIO SET senha = ? WHERE codigo_usuario = ?', [senha, codigo_usuario]);
+            await connection.query('UPDATE USUARIO SET senha = ? WHERE codigo_usuario = ?', [hashedPassword, codigo_usuario]);
             return { success: true };
         }
         else {
