@@ -15,11 +15,11 @@ export const getAllInscricoesService = async () => {
 };
 
 // Serviço para obter todas as inscrições de um aluno
-export const getAllInscricoesFromAlunoService = async (codigo_aluno) => {
+export const getAllInscricoesFromAlunoService = async (codigo_usuario) => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM INSCRICAO WHERE codigo_aluno = ?', [codigo_aluno]);
+        const [rows] = await connection.query('SELECT * FROM INSCRICAO WHERE codigo_aluno = ?', [codigo_usuario]);
         return rows;
     } catch (error) {
         throw new Error('Erro ao obter inscrições do aluno: ' + error.message);
@@ -28,7 +28,7 @@ export const getAllInscricoesFromAlunoService = async (codigo_aluno) => {
     }
 };
 
-// Serviço para obter todas as inscrições de um edital
+// Serviço para obter todas as inscrições em um edital
 export const getAllEditalInscricoesService = async (codigo_edital) => {
     const connection = await pool.getConnection();
 
@@ -63,8 +63,8 @@ export const createInscricaoService = async (codigo_edital, codigo_aluno) => {
     try {
         const query = `
             INSERT INTO INSCRICAO
-            (codigo_edital, codigo_aluno, data_inscricao)
-            VALUES (?, ?, ?)
+            (codigo_edital, codigo_aluno, data_inscricao, estado)
+            VALUES (?, ?, ?, ?)
         `;
 
         const data_atual = new Date();
@@ -75,7 +75,7 @@ export const createInscricaoService = async (codigo_edital, codigo_aluno) => {
 
         const data_inscricao = `${ano}-${mes}-${dia}`;
 
-        const values = [codigo_edital, codigo_aluno, data_inscricao];
+        const values = [codigo_edital, codigo_aluno, data_inscricao, 1]; // estado = 'inscrito'
 
         const [result] = await connection.query(query, values);
 
@@ -84,9 +84,36 @@ export const createInscricaoService = async (codigo_edital, codigo_aluno) => {
             codigo_edital,
             codigo_aluno,
             data_inscricao,
+            estado: 'inscrito',
         };
     } catch (error) {
         throw new Error('Erro ao se inscrever em edital: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};
+
+// Serviço para o professor alterar o estado de uma inscrição
+export const updateEstadoInscricaoService = async (codigo_inscricao, novo_estado) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        const query = `
+            UPDATE INSCRICAO
+            SET estado = ?
+            WHERE codigo_inscricao = ?
+        `;
+
+        await connection.query(query, [novo_estado, codigo_inscricao]);
+        await connection.commit();
+
+        return {
+            codigo_inscricao,
+            novo_estado,
+        }
+    } catch (error) {
+        throw new Error('Erro ao atualizar estado do edital: ' + error.message);
     } finally {
         connection.release();
     }

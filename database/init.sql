@@ -52,6 +52,7 @@ CREATE TABLE INSCRICAO (
     codigo_edital INT,
     codigo_aluno INT,
     data_inscricao DATE,
+    estado ENUM('inscrito', 'analise', 'aceito', 'recusado'),
     FOREIGN KEY (codigo_edital) REFERENCES EDITAL(codigo_edital),
     FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario)
 );

@@ -3,7 +3,8 @@ import {
     getAllEditalInscricoesService, 
     getAllInscricoesFromAlunoService,
     getInscricaoService, 
-    createInscricaoService
+    createInscricaoService,
+    updateEstadoInscricaoService
 } from "../services/inscricaoService.js";
 
 // Controlador para obter todas as inscrições
@@ -55,6 +56,19 @@ export const createInscricao = async (req, res) => {
         const { codigo_edital, codigo_aluno } = req.params;
         const inscricao = await createInscricaoService(codigo_edital, codigo_aluno);
         return res.status(201).json(inscricao);
+    } catch (error) {
+        return res.status(500).json(error.message);
+    }
+};
+
+// Controlador para atualizar o estado de um edital
+export const updateEstadoInscricao = async (req, res) => {
+    try {
+        const { codigo_inscricao } = req.params;
+        const { novo_estado } = req.body;
+
+        const updatedInscricao = await updateEstadoInscricaoService(codigo_inscricao, novo_estado);
+        return res.status(200).json(updatedInscricao);
     } catch (error) {
         return res.status(500).json(error.message);
     }
