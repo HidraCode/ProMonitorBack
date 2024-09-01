@@ -339,6 +339,125 @@ router.get('/inactive', getInactiveMonitores);
  */
 router.get('/:codigo_monitor', getMonitor);
 
+/**
+ * @swagger
+ * /api/monitores/professor/{codigo_professor}:
+ *   get:
+ *     summary: Retorna uma lista de monitores associados a um professor específico.
+ *     tags: [Monitores]
+ *     description: >
+ *       Esta rota retorna todos os monitores que estão vinculados ao professor especificado pelo `codigo_professor`
+ *     parameters:
+ *       - in: path
+ *         name: codigo_professor
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Código do professor para buscar os monitores associados.
+ *     responses:
+ *       200:
+ *         description: Lista de monitores associados ao professor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   codigo_monitor:
+ *                     type: integer
+ *                     description: Código identificador do monitor.
+ *                     example: 5
+ *                   codigo_aluno:
+ *                     type: integer
+ *                     description: Código identificador do aluno associado ao monitor.
+ *                     example: 2
+ *                   ativo:
+ *                     type: integer
+ *                     description: Indica se o monitor está ativo (1) ou inativo (0).
+ *                     example: 1
+ *                   codigo_edital:
+ *                     type: integer
+ *                     description: Código identificador do edital associado ao monitor.
+ *                     example: 3
+ *                   tipo_monitoria:
+ *                     type: string
+ *                     description: Tipo de monitoria (e.g., bolsista, voluntário).
+ *                     example: "bolsista"
+ *                   codigo_usuario:
+ *                     type: integer
+ *                     description: Código identificador do usuário associado ao aluno.
+ *                     example: 2
+ *                   tipo:
+ *                     type: string
+ *                     description: Tipo do usuário (e.g., aluno).
+ *                     example: "aluno"
+ *                   nome:
+ *                     type: string
+ *                     description: Nome completo do aluno.
+ *                     example: "Pedro"
+ *                   matricula:
+ *                     type: string
+ *                     description: Matrícula do aluno.
+ *                     example: "1234567821"
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do aluno.
+ *                     example: "12312312112"
+ *                   telefone:
+ *                     type: string
+ *                     description: Telefone do aluno.
+ *                     example: "81995623412"
+ *                   data_nascimento:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Data de nascimento do aluno.
+ *                     example: "2005-05-25T00:00:00.000Z"
+ *                   email:
+ *                     type: string
+ *                     description: E-mail do aluno.
+ *                     example: "pedro1@gmail.com"
+ *                   senha:
+ *                     type: string
+ *                     description: Hash da senha do aluno.
+ *                     example: "$2b$10$.wuAmOqHCCOWUxbCiGF4zOsMzlJ7VX0GKXa4MBLS8wm0cLuO.zP5K"
+ *                   codigo_professor:
+ *                     type: integer
+ *                     description: Código identificador do professor.
+ *                     example: 5
+ *                   titulo:
+ *                     type: string
+ *                     description: Título do edital associado ao monitor.
+ *                     example: "titulo"
+ *                   data_inicio:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Data de início do edital.
+ *                     example: "2000-10-10T00:00:00.000Z"
+ *                   data_fim:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Data de término do edital.
+ *                     example: "2000-10-20T00:00:00.000Z"
+ *                   descricao:
+ *                     type: string
+ *                     description: Descrição do edital.
+ *                     example: "dasda"
+ *                   link:
+ *                     type: string
+ *                     description: Link para o edital.
+ *                     example: "https://link.com.br"
+ *                   publico:
+ *                     type: integer
+ *                     description: Indica se o edital é público (1) ou privado (0).
+ *                     example: 1
+ *       400:
+ *         description: Requisição inválida.
+ *       404:
+ *         description: Nenhum monitor encontrado para o professor especificado.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
 router.get('/professor/:codigo_professor', getMonitoresProfessor);
 
 /**
