@@ -48,6 +48,21 @@ export const getMonitorService = async (codigo_monitor) => {
     }
 };
 
+// Serviço para obter os monitores de um professor
+export const getMonitoresProfessorService = async (codigo_professor) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const [rows] = await connection.query(`SELECT * FROM MONITOR
+            JOIN USUARIO ON MONITOR.codigo_aluno = USUARIO.codigo_usuario
+            JOIN EDITAL ON MONITOR.codigo_edital = EDITAL.codigo_edital
+            WHERE EDITAL.codigo_professor = ?`, [codigo_professor]);
+        return rows;
+    } finally {
+        connection.release();
+    }
+};
+
 // Serviço para criar um monitor a partir de um aluno
 export const createMonitorService = async (monitorData) => {
     const { codigo_usuario, ativo, codigo_edital, tipo_monitoria } = monitorData;

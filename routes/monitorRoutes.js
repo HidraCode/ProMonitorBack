@@ -5,7 +5,8 @@ import {
     getInactiveMonitores,
     getMonitor, 
     createMonitor,
-    updateMonitor
+    updateMonitor,
+    getMonitoresProfessor
 } from "../controllers/monitorController.js";
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
@@ -337,6 +338,8 @@ router.get('/inactive', getInactiveMonitores);
  *         description: Erro interno no servidor
  */
 router.get('/:codigo_monitor', getMonitor);
+
+router.get('/professor/:codigo_professor', getMonitoresProfessor);
 
 /**
  * @swagger

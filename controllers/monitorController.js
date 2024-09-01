@@ -4,7 +4,8 @@ import {
     getInactiveMonitoresService,
     getMonitorService, 
     createMonitorService,
-    updateMonitorService 
+    updateMonitorService, 
+    getMonitoresProfessorService
 } from "../services/monitorService.js";
 
 // Controlador para obter todos os monitores
@@ -47,6 +48,17 @@ export const getMonitor = async (req, res) => {
         const monitor = await getMonitorService(codigo_monitor);
 
         return res.status(200).json(monitor);
+    } catch (error) {
+        return res.status(500).json(error.message);
+    }
+};
+
+// Controlador para obter os monitores associados a um professor
+export const getMonitoresProfessor = async (req, res) => {
+    try {
+        const { codigo_professor } = req.params;
+        const monitores = await getMonitoresProfessorService(codigo_professor);
+        return res.status(200).json(monitores);
     } catch (error) {
         return res.status(500).json(error.message);
     }
