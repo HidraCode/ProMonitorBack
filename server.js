@@ -19,8 +19,14 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Configurar o CORS para o frontend
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type'], // Cabeçalhos permitidos
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Rotas
