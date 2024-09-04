@@ -13,61 +13,69 @@ const SALT_ROUNDS = 10;
 export const loginUserService = async (email, senha, tipo_usuario) => {
     const connection = await pool.getConnection();
     try {
-        if (tipo_usuario == 'aluno') {
-            console.log(email, senha, tipo_usuario);
-            const [aluno] = await connection.query('SELECT * FROM USUARIO WHERE email = ? AND tipo = ?', [email, tipo_usuario]);
+        console.log(email, senha, tipo_usuario);
 
-            if (aluno.length === 0) {
+        if (tipo_usuario === 'monitor') {
+            // checa se é um monitor
+            const [monitor] = await connection.query(`
+                SELECT *
+                FROM USUARIO u
+                JOIN MONITOR m ON u.codigo_usuario = m.codigo_aluno
+                WHERE u.email = ? AND m.ativo = ?
+                `, [email, true]);
+            
+            // checa se existe esse monitor
+            if (monitor.length === 0) {
                 throw new Error('Email ou senha incorretos');
             }
 
-            const alunoData = aluno[0];
-            console.log(alunoData)
-            // Compara a senha fornecida com a senha armazenada
-            const isPasswordValid = await bcrypt.compare(senha, alunoData.senha);
+            const monitorData = monitor[0];
+            const isPasswordValid = await bcrypt.compare(senha, monitorData.senha);
 
             if (!isPasswordValid) {
                 throw new Error('Email ou senha incorretos');
             }
-
+    
             // Cria o payload do token com o ID do usuário, role e email
-            const payload = { codigo_usuario: alunoData.codigo_usuario, role: 'aluno', email };
+            const payload = { codigo_usuario: monitorData.codigo_usuario, role: tipo_usuario, email };
             // Cria o token
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-
+    
             return {
-                codigo_usuario: alunoData.codigo_usuario,
-                email: alunoData.email,
+                codigo_usuario: monitorData.codigo_usuario,
+                role: tipo_usuario,
+                email: monitorData.email,
                 token,
             };
         }
-        if (tipo_usuario == 'professor') {
-            const [professor] = await connection.query('SELECT * FROM USUARIO WHERE email = ? AND tipo = ?', [email, tipo_usuario]);
 
-            if (professor.length === 0) {
-                throw new Error('Email ou senha incorretos');
-            }
+        // checa se o usuário é aluno, professor ou coordenador
+        const [usuario] = await connection.query('SELECT * FROM USUARIO WHERE email = ? AND tipo = ?', [email, tipo_usuario]);
 
-            const professorData = professor[0];
-            console.log(professorData)
-            // Compara a senha fornecida com a senha armazenada
-            const isPasswordValid = await bcrypt.compare(senha, professorData.senha);
-
-            if (!isPasswordValid) {
-                throw new Error('Email ou senha incorretos');
-            }
-
-            // Cria o payload do token com o ID do usuário, role e email
-            const payload = { codigo_usuario: professorData.codigo_usuario, role: 'professor', email };
-            // Cria o token
-            const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-
-            return {
-                codigo_usuario: professorData.codigo_usuario,
-                email: professorData.email,
-                token,
-            };
+        if (usuario.length === 0) {
+            throw new Error('Email ou senha incorretos');
         }
+
+        const usuarioData = usuario[0];
+        console.log(usuario);
+        // Compara a senha fornecida com a senha armazenada
+        const isPasswordValid = await bcrypt.compare(senha, usuarioData.senha);
+
+        if (!isPasswordValid) {
+            throw new Error('Email ou senha incorretos');
+        }
+
+        // Cria o payload do token com o ID do usuário, role e email
+        const payload = { codigo_usuario: usuarioData.codigo_usuario, role: tipo_usuario, email };
+        // Cria o token
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+        return {
+            codigo_usuario: usuarioData.codigo_usuario,
+            role: tipo_usuario,
+            email: usuarioData.email,
+            token,
+        };
     } catch (error) {
         throw new Error('Erro ao realizar login: ' + error.message);
     } finally {
