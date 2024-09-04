@@ -1,5 +1,11 @@
 import express from 'express';
-import { createProfessor, getAllProfessores, updateProfessor } from '../controllers/professorController.js';
+import { 
+    createCoordenador,
+    createProfessor,
+    getAllCoordenadores,
+    getAllProfessores,
+    updateProfessor
+} from '../controllers/professorController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -188,5 +194,101 @@ router.post('/', createProfessor); //Criar professores
  *         description: Erro interno no servidor
  */
 router.put('/:codigo_usuario', updateProfessor);//authenticateToken, authorizeRoles('professor'), updateProfessor);//Atualizar professor
+
+/**
+ * @swagger
+ * /api/professores/criar-coordenador/{codigo_usuario}:
+ *   put:
+ *     summary: Atualiza o tipo de um professor para `coordenador`
+ *     tags: [Professores]
+ *     parameters:
+ *     - in: path
+ *       name: codigo_usuario
+ *       schema: 
+ *         type: integer
+ *       required: true
+ *     description: Código de usuário do professor
+ *     responses:
+ *       200:
+ *         description: Coordenador criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 codigo_professor:
+ *                   type: integer
+ *                   description: Código único do usuário (professor)
+ *                   example: 2
+ *                 tipo:
+ *                   type: string
+ *                   description: Novo tipo do professor
+ *                   example: coordenador
+ *       400:
+ *         description: Requisição inválida (faltando senha ou outros erros de validação)
+ *       401:
+ *         description: Não autorizado (Token inválido ou ausente)
+ *       500:
+ *         description: Erro interno no servidor
+ */
+router.put('/criar-coordenador/:codigo_professor', createCoordenador);
+
+/**
+ * @swagger
+ * /api/professores/coordenadores:
+ *   get:
+ *     summary: Retorna uma lista de todos os professores coordenadores
+ *     tags: [Professores]
+ *     responses:
+ *       200:
+ *         description: Lista de coordenadores retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   codigo_usuario:
+ *                     type: integer
+ *                     description: ID do usuário
+ *                     example: 2
+ *                   tipo:
+ *                     type: string
+ *                     description: Tipo de usuário
+ *                     example: coordenador
+ *                   nome:
+ *                     type: string
+ *                     description: Nome do professor
+ *                     example: Marcelo Araujo Silva
+ *                   matricula:
+ *                     type: string
+ *                     description: Matrícula do professor
+ *                     example: 1234567825
+ *                   cpf:
+ *                     type: string
+ *                     description: CPF do professor
+ *                     example: 12312312342
+ *                   telefone:
+ *                     type: string
+ *                     description: Telefone do professor
+ *                     example: 81095623412
+ *                   data_nascimento:
+ *                     type: string
+ *                     format: date
+ *                     description: Data de nascimento do professor
+ *                     example: 2005-05-25T00:00:00.000Z
+ *                   email:
+ *                     type: string
+ *                     description: Email do professor
+ *                     example: marcelo102@gmail.com
+ *                   senha:
+ *                     type: string
+ *                     description: Senha criptografada do professor
+ *                     example: $2b$10$b0QT8Bojs5BCxHn1uyiJAO.BGuOgAhcHdzjuzPIo83yhmqucy/NIi
+ *       500:
+ *         description: Erro interno no servidor
+ */
+router.get('/coordenadores', getAllCoordenadores);
 
 export default router;

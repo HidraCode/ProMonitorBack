@@ -159,3 +159,62 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
         connection.release();
     }
 };
+
+// Serviço para transformar um professor em coordenador a partir do seu codigo_usuario, atualizando o seu tipo
+export const createCoordenadorService = async (codigo_professor) => {
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // Testa se existe um professor com esse código
+        const [existingProfessor] = await connection.query(`
+            SELECT *
+            FROM USUARIO
+            WHERE codigo_usuario = ? AND tipo = ?
+            `, [codigo_professor, 'professor']);
+        
+        if (existingProfessor.length === 0) {
+            throw new Error('Não existe professor com esse código');
+        }
+
+        // Se existir professor, atualiza o tipo para coordenador
+        const updateProfessorQuery = `
+            UPDATE USUARIO
+            SET tipo = ?
+            WHERE codigo_usuario = ?
+        `;
+        await connection.query(updateProfessorQuery, ['coordenador', codigo_professor]);
+
+        (await connection).commit();
+
+        return {
+            codigo_professor,
+            tipo: 'coordenador',
+        };
+    } catch (error) {
+        (await connection).rollback();
+        throw new Error('Erro ao criar coordenador: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};
+
+// Listar coordenadores
+export const getAllCoordenadoresService = async () => {
+    const connection = await pool.getConnection();
+
+    try {
+        const [coordenadores] = await connection.query(`
+            SELECT *
+            FROM USUARIO
+            WHERE tipo = 'coordenador'
+        `);
+
+        return coordenadores;
+    } catch (error) {
+        throw new Error('Erro ao obter coordenadores: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};

@@ -1,7 +1,9 @@
 import { 
     getAllProfessoresService, 
     createProfessorService, 
-    updateProfessorService 
+    updateProfessorService,
+    createCoordenadorService, 
+    getAllCoordenadoresService,
 } from "../services/professorService.js";
 
 // Controlador para obter todos os professores
@@ -38,3 +40,25 @@ export const updateProfessor = async (req, res) => {
         return res.status(500).json({ message: 'Erro ao atualizar professor: ' + error.message });
     }
 };
+
+// Controlador para criar um coordenador a partir de um professor
+export const createCoordenador = async (req, res) => {
+    try {
+        const { codigo_professor } = req.params;
+
+        const coordenador = await createCoordenadorService(codigo_professor);
+        return res.status(200).json(coordenador);
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao criar coordenador: ' + error.message });
+    }
+};
+
+// Controlador para obter todos os coordenadores
+export const getAllCoordenadores = async (req, res) => {
+    try {
+        const coordenadores = await getAllCoordenadoresService();
+        return res.status(200).json(coordenadores);
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao obter coordenadores: ' + error.message });
+    }
+}
