@@ -1,5 +1,5 @@
 import express from 'express';
-import { createAluno, getAllAlunos, updateAluno } from '../controllers/alunoController.js';
+import { createAluno, getAllAlunos, updateAluno, criarEEnviarFrequencia } from '../controllers/alunoController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -188,5 +188,7 @@ router.post('/', createAluno);
  *         description: Erro interno no servidor
  */
 router.put('/:codigo_usuario', updateAluno); //authenticateToken, authorizeRoles('aluno'), updateAluno);
+
+router.post('/enviar-frequencia', criarEEnviarFrequencia);
 
 export default router;

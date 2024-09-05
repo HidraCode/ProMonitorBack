@@ -4,7 +4,8 @@ import {
     createProfessor,
     getAllCoordenadores,
     getAllProfessores,
-    updateProfessor
+    updateProfessor,
+    assinarFrequencia,
 } from '../controllers/professorController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
@@ -290,5 +291,7 @@ router.put('/criar-coordenador/:codigo_professor', createCoordenador);
  *         description: Erro interno no servidor
  */
 router.get('/coordenadores', getAllCoordenadores);
+
+router.post('/assinar-frequencia', assinarFrequencia);
 
 export default router;

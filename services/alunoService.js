@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 import { pool } from '../database/db.js';
+import { generatePDF } from './pdfService.js';
 
 dotenv.config();
 
@@ -159,3 +160,42 @@ export const updateAlunoService = async (codigo_usuario, alunoData) => {
         connection.release();
     }
 };
+
+export const enviarFrequenciaParaAssinatura = async (nome, horas, data, codigo_aluno, codigo_professor) => {
+    // Gera o PDF
+    const pdfBytes = await generatePDF({ nome, horas, data });
+    console.log(pdfBytes);
+    const connection = await pool.getConnection();
+    
+    try {
+        // Insere o PDF no banco de dados
+        const query = `
+            INSERT INTO FREQUENCIA
+            (codigo_aluno, codigo_professor, pdf)
+            VALUES (?, ?, ?)
+        `;
+        const values = [codigo_aluno, codigo_professor, pdfBytes];
+        await connection.query(query, values);
+
+        return { message: 'Documento de frequência enviado para assinatura' };
+    } catch (error) {
+        throw new Error('Erro ao enviar documento para assinatura: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};
+
+/**
+ * Uint8Array(901) [
+37,  80,  68,  70,  45,  49,  46,  55,  10,  37, 129, 129,
+129, 129,  10,  10,  54,  32,  48,  32, 111,  98, 106,  10,
+60,  60,  10,  47,  70, 105, 108, 116, 101, 114,  32,  47,
+70, 108,  97, 116, 101,  68, 101,  99, 111, 100, 101,  10,
+47,  76, 101, 110, 103, 116, 104,  32,  49,  52,  52,  10,
+62,  62,  10, 115, 116, 114, 101,  97, 109,  10, 120, 156,
+173, 141, 187,  10,   2,  65,  12,  69, 251, 124,  69, 106,
+65, 204, 188,  50, 179,  32, 130, 178,  51,  88, 216,   8,
+249,   1, 145,  85,
+.. 801 more items
+]
+ */
