@@ -12,6 +12,7 @@ import authRoutes from './routes/authRoutes.js';
 import editalRoutes from './routes/editalRoutes.js';
 import monitorRoutes from './routes/monitorRoutes.js';
 import inscricaoRoutes from './routes/inscricaoRoutes.js';
+import frequenciaRoutes from './routes/frequenciaRoutes.js';
 
 // Configuração das variáveis de ambiente
 dotenv.config();
@@ -37,6 +38,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/editais', editalRoutes);
 app.use('/api/monitores', monitorRoutes);
 app.use('/api/inscricoes', inscricaoRoutes);
+app.use('/api/frequencia', frequenciaRoutes);
 
 // Endpoint para verificar se a aplicação está saudável no Render
 app.get('/healthcheck', (req, res) => {
