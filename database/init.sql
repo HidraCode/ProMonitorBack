@@ -127,3 +127,10 @@ CREATE TABLE FREQUENCIA (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
     data_assinatura TIMESTAMP NULL
 );
+
+-- tabela para armazenar as chaves dos professores
+CREATE TABLE CHAVES_PROFESSOR (
+    codigo_professor INT PRIMARY KEY,
+    chave_publica TEXT NOT NULL,
+    chave_privada TEXT NOT NULL
+);

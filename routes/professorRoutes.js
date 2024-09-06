@@ -5,8 +5,11 @@ import {
     getAllCoordenadores,
     getAllProfessores,
     updateProfessor,
-    assinarFrequencia,
 } from '../controllers/professorController.js';
+import {
+    gerarChavesProfessor,
+    assinarDocumento,
+} from '../controllers/assinaturaController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -292,6 +295,7 @@ router.put('/criar-coordenador/:codigo_professor', createCoordenador);
  */
 router.get('/coordenadores', getAllCoordenadores);
 
-router.post('/assinar-frequencia', assinarFrequencia);
+router.post('/gerar-chaves', gerarChavesProfessor);
+router.post('/assinar-frequencia', assinarDocumento);
 
 export default router;

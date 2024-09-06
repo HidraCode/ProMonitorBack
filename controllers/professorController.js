@@ -4,7 +4,6 @@ import {
     updateProfessorService,
     createCoordenadorService, 
     getAllCoordenadoresService,
-    assinarDocumentoService,
 } from "../services/professorService.js";
 
 // Controlador para obter todos os professores
@@ -61,17 +60,5 @@ export const getAllCoordenadores = async (req, res) => {
         return res.status(200).json(coordenadores);
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao obter coordenadores: ' + error.message });
-    }
-};
-
-export const assinarFrequencia = async (req, res) => {
-    const { documentId } = req.body;
-
-    try {
-        const privateKeyPath = './keys/professor_private.pem'; // Caminho da chave privada do professor
-        const result = await assinarDocumentoService(documentId, privateKeyPath);
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
     }
 };

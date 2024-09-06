@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 import { pool } from '../database/db.js';
-import { assinarDocumento } from './assinaturaService.js';
 
 dotenv.config();
 
@@ -215,41 +214,6 @@ export const getAllCoordenadoresService = async () => {
         return coordenadores;
     } catch (error) {
         throw new Error('Erro ao obter coordenadores: ' + error.message);
-    } finally {
-        connection.release();
-    }
-};
-
-export const assinarDocumentoService = async (documentId, privateKeyPath) => {
-    const connection = await pool.getConnection();
-    
-    try {
-        // Busca o PDF no banco de dados
-        const [documentRows] = await connection.query(
-            'SELECT pdf FROM documentos_frequencia WHERE id = ?',
-            [documentId]
-        );
-
-        if (documentRows.length === 0) {
-            throw new Error('Documento não encontrado!');
-        }
-
-        const pdfBytes = documentRows[0].pdf;
-
-        // Assina o PDF
-        const assinatura = assinarDocumento(privateKeyPath, pdfBytes);
-
-        // Atualiza o documento com a assinatura no banco de dados
-        const updateQuery = `
-            UPDATE documentos_frequencia
-            SET assinatura_professor = ?, data_assinatura = NOW()
-            WHERE id = ?
-        `;
-        await connection.query(updateQuery, [assinatura, documentId]);
-
-        return { message: 'Documento assinado com sucesso', assinatura };
-    } catch (error) {
-        throw new Error('Erro ao assinar documento: ' + error.message);
     } finally {
         connection.release();
     }
