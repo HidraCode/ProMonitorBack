@@ -78,18 +78,26 @@ export const createMonitorService = async (monitorData) => {
         if (check.length < 1) {
             throw new Error('Não existe aluno com esse código');
         }
+        // Associando a disciplina do edital ao monitor
+        const [disciplina] = await connection.query(`
+            SELECT disciplina
+            FROM EDITAL
+            WHERE codigo_edital = ?    
+        `, [codigo_edital]);
+        const disciplinaMonitor = disciplina[0].disciplina;
 
         const query = `
-            INSERT INTO MONITOR (codigo_aluno, ativo, codigo_edital, tipo_monitoria)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO MONITOR (codigo_aluno, ativo, codigo_edital, disciplina, tipo_monitoria)
+            VALUES (?, ?, ?, ?, ?)
         `;
-        const [result] = await connection.query(query, [codigo_usuario, ativo, codigo_edital, tipo_monitoria]);
+        const [result] = await connection.query(query, [codigo_usuario, ativo, codigo_edital, disciplinaMonitor, tipo_monitoria]);
 
         return {
             codigo_monitor: result.insertId,
             codigo_usuario,
             ativo,
             codigo_edital,
+            disciplina: disciplinaMonitor,
             tipo_monitoria,
         };
     } catch (error) {

@@ -45,6 +45,7 @@ CREATE TABLE MONITOR (
     codigo_aluno INT, 
     ativo BOOLEAN, 
     codigo_edital INT, 
+    disciplina VARCHAR(40),
     tipo_monitoria ENUM('bolsista', 'voluntario'), -- 'bolsista' ou 'voluntário' 
     FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario),
     FOREIGN KEY (codigo_edital) REFERENCES EDITAL(codigo_edital)
