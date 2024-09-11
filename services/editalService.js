@@ -55,7 +55,7 @@ export const getEditalLinkService = async (codigo_edital) => {
 
 // Serviço para criar edital
 export const createEditalService = async (editalData) => {
-    const { codigo_professor, titulo, data_inicio, data_fim, descricao, link, publico } = editalData;
+    const { codigo_professor, titulo, disciplina, data_inicio, data_fim, descricao, link, publico } = editalData;
 
     const connection = await pool.getConnection();
     try {
@@ -67,17 +67,18 @@ export const createEditalService = async (editalData) => {
 
         // Insere os dados do edital na tabela EDITAL
         const query = `
-            INSERT INTO EDITAL (codigo_professor, titulo, data_inicio, data_fim, descricao, link, publico)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO EDITAL (codigo_professor, titulo, disciplina, data_inicio, data_fim, descricao, link, publico)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `
 
-        const values = [codigo_professor, titulo, data_inicio, data_fim, descricao, link, publico];
+        const values = [codigo_professor, titulo, disciplina, data_inicio, data_fim, descricao, link, publico];
         const [result] = await connection.query(query, values);
 
         return {
             codigo_edital: result.insertId,
             codigo_professor,
             titulo,
+            disciplina,
             data_inicio,
             data_fim,
             descricao,
