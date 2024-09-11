@@ -39,6 +39,10 @@ const router = express.Router();
  *                     type: string
  *                     description: Título do edital
  *                     example: Edital de Monitoria 2024.1
+ *                   disciplina:
+ *                     type: string
+ *                     description: Disciplina associada ao edital
+ *                     example: Engenharia de Software
  *                   data_inicio:
  *                     type: string
  *                     format: date
@@ -238,6 +242,10 @@ router.get('/:codigo_edital/link', getEditalLink);
  *                 type: string
  *                 description: Título do edital
  *                 example: Edital de monitoria
+ *               disciplina:
+ *                 type: string
+ *                 description: Disciplina associada ao edital
+ *                 example: Engenharia de Software
  *               data_inicio:
  *                 type: string
  *                 format: date
@@ -280,6 +288,10 @@ router.get('/:codigo_edital/link', getEditalLink);
  *                   type: string
  *                   description: Título do edital
  *                   example: Edital de monitoria
+ *                 disciplina:
+ *                   type: string
+ *                   description: Disciplina associada ao edital
+ *                   example: Engenharia de Software
  *                 data_inicio:
  *                   type: string
  *                   format: date

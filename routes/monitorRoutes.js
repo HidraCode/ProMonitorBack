@@ -51,6 +51,10 @@ const router = express.Router();
  *                     type: integer
  *                     description: Código do edital ao qual o monitor está associado
  *                     example: 1
+ *                   disciplina:
+ *                     type: string
+ *                     description: Disciplina associada ao monitor
+ *                     example: Engenharia de Software
  *                   tipo_monitoria:
  *                     type: string
  *                     description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntario')
@@ -129,6 +133,10 @@ router.get('/', getAllMonitores);//authenticateToken, getAllMonitores);
  *                     type: integer
  *                     description: Código do edital ao qual o monitor está associado
  *                     example: 1
+ *                   disciplina:
+ *                     type: string
+ *                     description: Disciplina associada ao edital
+ *                     example: Engenharia de Software
  *                   tipo_monitoria:
  *                     type: string
  *                     description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
@@ -207,6 +215,10 @@ router.get('/active', getActiveMonitores);//authenticateToken, getActiveMonitore
  *                     type: integer
  *                     description: Código do edital ao qual o monitor está associado
  *                     example: 1
+ *                   disciplina:
+ *                     type: string
+ *                     description: Disciplina associada ao edital
+ *                     example: Engenharia de Software
  *                   tipo_monitoria:
  *                     type: string
  *                     description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
@@ -291,6 +303,10 @@ router.get('/inactive', getInactiveMonitores);
  *                   type: integer
  *                   description: Código do edital ao qual o monitor está associado
  *                   example: 1
+ *                 disciplina:
+ *                   type: string
+ *                   description: Disciplina associada ao edital
+ *                   example: Engenharia de Software
  *                 tipo_monitoria:
  *                   type: string
  *                   description: Tipo de monitoria (por exemplo, 'bolsista', 'voluntário')
@@ -380,6 +396,10 @@ router.get('/:codigo_monitor', getMonitor);
  *                     type: integer
  *                     description: Código identificador do edital associado ao monitor.
  *                     example: 3
+ *                   disciplina:
+ *                    type: string
+ *                    description: Disciplina associada ao edital
+ *                    example: Engenharia de Software
  *                   tipo_monitoria:
  *                     type: string
  *                     description: Tipo de monitoria (e.g., bolsista, voluntário).
