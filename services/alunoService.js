@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 import { pool } from '../database/db.js';
+import { generatePDF } from './pdfService.js';
 
 dotenv.config();
 
@@ -155,6 +156,31 @@ export const updateAlunoService = async (codigo_usuario, alunoData) => {
     } catch (error) {
         await connection.rollback(); // Reverte a transação em caso de erro
         throw new Error('Erro ao atualizar aluno: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};
+
+export const enviarFrequenciaParaAssinatura = async (nome, horas, data, codigo_aluno, codigo_professor) => {
+    // Gera o PDF
+    const pdfBytes = await generatePDF({ nome, horas, data });
+    const pdfBuffer = Buffer.from(pdfBytes);
+
+    const connection = await pool.getConnection();
+    
+    try {
+        // Insere o PDF no banco de dados
+        const query = `
+            INSERT INTO FREQUENCIA
+            (codigo_aluno, codigo_professor, pdf)
+            VALUES (?, ?, ?)
+        `;
+        const values = [codigo_aluno, codigo_professor, pdfBuffer];
+        await connection.query(query, values);
+
+        return { message: 'Documento de frequência enviado para assinatura' };
+    } catch (error) {
+        throw new Error('Erro ao enviar documento para assinatura: ' + error.message);
     } finally {
         connection.release();
     }

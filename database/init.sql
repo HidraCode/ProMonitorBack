@@ -118,3 +118,21 @@ CREATE TABLE RELATORIO (
     FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
     FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
 );
+
+-- tabela para armazenar os documentos de frequência
+CREATE TABLE FREQUENCIA (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo_aluno INT,
+    codigo_professor INT,
+    pdf LONGBLOB,
+    assinatura_professor TEXT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
+    data_assinatura TIMESTAMP NULL
+);
+
+-- tabela para armazenar as chaves dos professores
+CREATE TABLE CHAVES_PROFESSOR (
+    codigo_professor INT PRIMARY KEY,
+    chave_publica TEXT NOT NULL,
+    chave_privada TEXT NOT NULL
+);

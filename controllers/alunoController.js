@@ -1,7 +1,8 @@
 import { 
     getAllAlunosService, 
     createAlunoService, 
-    updateAlunoService
+    updateAlunoService,
+    enviarFrequenciaParaAssinatura,
 } from "../services/alunoService.js";
 
 export const getAllAlunos = async (req, res) => {
@@ -33,5 +34,16 @@ export const updateAluno = async (req, res) => {
         return res.status(200).json(updatedAluno);
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao atualizar aluno: ' + error.message });
+    }
+};
+
+export const criarEEnviarFrequencia = async (req, res) => {
+    const { nome, horas, data, codigo_aluno, codigo_professor } = req.body;
+
+    try {
+        const result = await enviarFrequenciaParaAssinatura(nome, horas, data, codigo_aluno, codigo_professor);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };
