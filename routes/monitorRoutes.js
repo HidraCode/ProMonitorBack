@@ -6,7 +6,9 @@ import {
     getMonitor, 
     createMonitor,
     updateMonitor,
-    getMonitoresProfessor
+    getMonitoresProfessor,
+    getTarefasMonitor,
+    downloadArquivoTarefa
 } from "../controllers/monitorController.js";
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
@@ -601,5 +603,11 @@ router.post('/create', createMonitor);
  *         description: Erro interno no servidor
  */
 router.put('/:codigo_monitor', updateMonitor);
+
+// Rota para obter todas as tarefas atribuídas a um monitor
+router.get('/tarefas/:codigo_monitor', getTarefasMonitor);
+
+// Rota para baixar o arquivo auxiliar de uma tarefa
+router.get('/tarefas/:codigo_monitor/:codigo_tarefa/download', downloadArquivoTarefa);
 
 export default router;

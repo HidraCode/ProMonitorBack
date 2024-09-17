@@ -143,3 +143,19 @@ export const updateMonitorService = async (codigo_monitor, monitorData) => {
         connection.release();
     }
 };
+
+// Serviço para obter todas as tarefas atribuídas a um monitor
+export const getTarefasMonitorService = async (codigo_monitor) => {
+    const connection = await pool.getConnection();
+    try {
+        const query = `
+            SELECT codigo_tarefa, codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux
+            FROM TAREFA
+            WHERE codigo_monitor = ?
+        `;
+        const [tarefas] = await connection.query(query, [codigo_monitor]);
+        return tarefas;
+    } catch (error) {
+        throw new Error('Erro ao buscar tarefas do monitor: ' + error.message);
+    }
+}
