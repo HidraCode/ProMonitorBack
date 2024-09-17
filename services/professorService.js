@@ -218,3 +218,29 @@ export const getAllCoordenadoresService = async () => {
         connection.release();
     }
 };
+
+// Serviço para um  professor atribuir uma tarefa a um monitor
+export const atribuirTarefaService = async (codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux) => {
+    try {
+        const connection = await pool.getConnection();
+
+        const [result] = await connection.query(`
+            INSERT INTO TAREFA (codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux)
+            VALUES (?, ?, ?, ?, ?, ?)   
+        `, [
+            codigo_monitor,
+            codigo_professor,
+            descricao,
+            data_conclusao,
+            disciplina,
+            arquivo_aux.buffer
+        ]);
+
+        return {
+            codigo_tarefa: result.insertId,
+        };
+    } catch (error) {
+        console.log('Erro ao atribuir tarefa: ', error);
+        throw new Error('Erro ao atribuir tarefa');
+    }
+};

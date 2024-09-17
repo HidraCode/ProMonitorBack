@@ -83,14 +83,16 @@ CREATE TABLE MONITORIA (
 
 DROP TABLE IF EXISTS TAREFA;
 CREATE TABLE TAREFA (
-    codigo_tarefa INT PRIMARY KEY,
-    codigo_monitoria INT,
+    codigo_tarefa INT PRIMARY KEY AUTO_INCREMENT,
+    codigo_monitor INT,
     codigo_professor INT, -- Professor que postou a tarefa
     descricao TEXT,
-    data_atribuicao DATE,
+    data_atribuicao DATE NULL,
     data_conclusao DATE,
-    status VARCHAR(50),
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
+    disciplina VARCHAR(40),
+    arquivo_aux LONGBLOB,
+    status VARCHAR(50) NULL,
+    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 

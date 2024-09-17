@@ -1,5 +1,7 @@
 import express from 'express';
+import multer from 'multer';
 import { 
+    atribuirTarefa,
     createCoordenador,
     createProfessor,
     getAllCoordenadores,
@@ -9,6 +11,10 @@ import {
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
+
+// Configuração do multer para upload de arquivos
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 /**
  * @swagger
@@ -290,5 +296,7 @@ router.put('/criar-coordenador/:codigo_professor', createCoordenador);
  *         description: Erro interno no servidor
  */
 router.get('/coordenadores', getAllCoordenadores);
+
+router.post('/atribuir-tarefa', upload.single('arquivo_aux'), atribuirTarefa);
 
 export default router;
