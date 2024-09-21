@@ -86,12 +86,12 @@ CREATE TABLE TAREFA (
     codigo_tarefa INT PRIMARY KEY AUTO_INCREMENT,
     codigo_monitor INT,
     codigo_professor INT, -- Professor que postou a tarefa
+    titulo VARCHAR(40),
     descricao TEXT,
-    data_atribuicao DATE NULL,
-    data_conclusao DATE,
+    data_conclusao DATE NULL,
     disciplina VARCHAR(40),
     arquivo_aux LONGBLOB,
-    status VARCHAR(50) NULL,
+    tipo ENUM ('tarefa', 'material'),
     FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );

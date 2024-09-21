@@ -125,7 +125,10 @@ export const downloadArquivoTarefa = async (req, res) => {
         }
 
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="tarefa_${codigo_tarefa}.pdf"`);
+        if (tarefa.tipo === 'tarefa')
+            res.setHeader('Content-Disposition', `attachment; filename="tarefa_${codigo_tarefa}.pdf"`);
+        else if (tarefa.tipo === 'material')
+            res.setHeader('Content-Disposition', `attachment; filename="material_apoio_${codigo_tarefa}.pdf"`);
         res.send(arquivo);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao baixar o arquivo.', error: error.message });

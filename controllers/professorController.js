@@ -66,15 +66,15 @@ export const getAllCoordenadores = async (req, res) => {
 
 // Controlador para atribuir tarefa a monitor
 export const atribuirTarefa = async (req, res) => {
-    const { codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina } = req.body;
+    const { codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, tipo } = req.body;
     const arquivo_aux = req.file;
 
     try {
         // Chama o serviço para atribuir a tarefa
-        const result = await atribuirTarefaService(codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux);
+        const result = await atribuirTarefaService(codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo);
 
         return res.status(201).json({ message: 'Tarefa criada com sucesso!', result });
     } catch (error) {
-        return res.status(500).json({ message: 'Erro ao atribuir tarefa.' });
+        return res.status(500).json({ message: 'Erro ao atribuir tarefa.' + error.message });
     }
 };

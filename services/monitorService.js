@@ -149,7 +149,7 @@ export const getTarefasMonitorService = async (codigo_monitor) => {
     const connection = await pool.getConnection();
     try {
         const query = `
-            SELECT codigo_tarefa, codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux
+            SELECT codigo_tarefa, codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo
             FROM TAREFA
             WHERE codigo_monitor = ?
         `;

@@ -220,27 +220,56 @@ export const getAllCoordenadoresService = async () => {
 };
 
 // Serviço para um  professor atribuir uma tarefa a um monitor
-export const atribuirTarefaService = async (codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux) => {
-    try {
-        const connection = await pool.getConnection();
+export const atribuirTarefaService = async (codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo) => {
+    const connection = await pool.getConnection();
 
-        const [result] = await connection.query(`
-            INSERT INTO TAREFA (codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux)
-            VALUES (?, ?, ?, ?, ?, ?)   
-        `, [
-            codigo_monitor,
-            codigo_professor,
-            descricao,
-            data_conclusao,
-            disciplina,
-            arquivo_aux.buffer
-        ]);
+    try {
+        let query, params;
+
+        // se o tipo for 'tarefa' adiciona a data_conclusão
+        if (tipo === 'tarefa') {
+            query = `
+                INSERT INTO TAREFA (codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)   
+            `;
+            params = [
+                codigo_monitor,
+                codigo_professor,
+                titulo,
+                descricao,
+                data_conclusao,
+                disciplina,
+                arquivo_aux.buffer,
+                tipo
+            ];
+        } else if (tipo === 'material') { // se o tipo for 'material' exclui o prazo
+            query = `
+                INSERT INTO TAREFA (codigo_monitor, codigo_professor, titulo, descricao, disciplina, arquivo_aux, tipo)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `;
+            params = [
+                codigo_monitor,
+                codigo_professor,
+                titulo,
+                descricao,
+                disciplina,
+                arquivo_aux.buffer,
+                tipo
+            ];
+        } else {
+            throw new Error('Tipo deve ser \'tarefa\' ou \'material\'');
+        }
+
+        const [result] = await connection.query(query, params);
 
         return {
             codigo_tarefa: result.insertId,
+            tipo,
         };
     } catch (error) {
-        console.log('Erro ao atribuir tarefa: ', error);
+        console.log('Erro ao atribuir tarefa/material: ', error);
         throw new Error('Erro ao atribuir tarefa');
+    } finally {
+        connection.release();
     }
 };
