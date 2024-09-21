@@ -1,10 +1,15 @@
-import { 
-    getAllProfessoresService, 
-    createProfessorService, 
+import {
+    getAllProfessoresService,
+    createProfessorService,
     updateProfessorService,
-    createCoordenadorService, 
+    createCoordenadorService,
     getAllCoordenadoresService,
+    createDisciplinaService,
+    createMonitoriaService,
 } from "../services/professorService.js";
+import {
+    getChavePublicaDoProfessorService,
+} from "../services/assinaturaService.js"
 
 // Controlador para obter todos os professores
 export const getAllProfessores = async (req, res) => {
@@ -61,4 +66,38 @@ export const getAllCoordenadores = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao obter coordenadores: ' + error.message });
     }
+}
+
+// Controlador para criar um novo professor
+export const createDisciplina = async (req, res) => {
+    try {
+        const { nome } = req.body;
+        // Chama o serviço para criar uma disciplina
+        const newDisciplina = await createDisciplinaService(nome);
+        return res.status(201).json(newDisciplina);
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao criar uma disciplina: ' + error.message });
+    }
 };
+
+// Controlador para criar uma nova monitoria
+export const createMonitoria = async (req, res) => {
+    try {
+        // Chama o serviço para criar a monitoria
+        const newMonitoria = await createMonitoriaService(req.body);
+        return res.status(201).json(newMonitoria);
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao criar a monitoria: ' + error.message });
+    }
+};
+
+export const getChavePublicaDoProfessor = async (req, res) => {
+    const codigo_usuario = req.user.codigo_usuario;
+
+    try {
+        const result = await getChavePublicaDoProfessorService(codigo_usuario);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

@@ -1,12 +1,13 @@
 import express from 'express';
-import { 
-    getAllMonitores, 
-    getActiveMonitores, 
+import {
+    getAllMonitores,
+    getActiveMonitores,
     getInactiveMonitores,
-    getMonitor, 
+    getMonitor,
     createMonitor,
     updateMonitor,
-    getMonitoresProfessor
+    getMonitoresProfessor,
+    getMonitoria
 } from "../controllers/monitorController.js";
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
@@ -600,6 +601,8 @@ router.post('/create', createMonitor);
  *       500:
  *         description: Erro interno no servidor
  */
-router.put('/:codigo_monitor', updateMonitor);
+router.put('/:codigo_monitor', authenticateToken, authorizeRoles('monitor'), updateMonitor);
+
+router.get('/monitoria/dados', authenticateToken, authorizeRoles('monitor'), getMonitoria)
 
 export default router;

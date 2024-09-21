@@ -1,10 +1,10 @@
 import { pool } from "../database/db.js";
 
-export const getPdfAssinadoService = async (documentId) => {
+export const getRelatorioAssinadoService = async (documentId) => {
     const connection = await pool.getConnection();
 
     try {
-        const [pdfResult] = await connection.query('SELECT pdf FROM FREQUENCIA WHERE id = ?', documentId);
+        const [pdfResult] = await connection.query('SELECT pdf FROM RELATORIO WHERE id = ?', documentId);
 
         if (pdfResult.length === 0 || !pdfResult[0].pdf) {
             throw new Error('Documento não encontrado ou não assinado');
@@ -18,13 +18,13 @@ export const getPdfAssinadoService = async (documentId) => {
     }
 };
 
-export const getFrequenciaService = async (codigo_frequencia) => {
+export const getRelatorioService = async (codigo_relatorio) => {
     const connection = await pool.getConnection();
     try {
-        // Busca a frequência no banco de dados
+        // Busca o relatório no banco de dados
         const [documentRows] = await connection.query(
-            'SELECT * FROM FREQUENCIA WHERE id = ?',
-            [codigo_frequencia]
+            'SELECT * FROM RELATORIO WHERE id = ?',
+            [codigo_relatorio]
         );
 
         if (documentRows.length === 0) {
@@ -34,7 +34,7 @@ export const getFrequenciaService = async (codigo_frequencia) => {
         const dadosFormulario = JSON.parse(documentRows[0].dados_form || '{}');
 
         return {
-            frequencia: {
+            relatorio: {
                 id: documentRows[0].id,
                 codigo_aluno: documentRows[0].codigo_aluno,
                 codigo_professor: documentRows[0].codigo_professor,
@@ -47,21 +47,21 @@ export const getFrequenciaService = async (codigo_frequencia) => {
             dadosFormulario
         }
     } catch (error) {
-        throw new Error('Erro ao obter frequência: ' + error.message);
+        throw new Error('Erro ao obter relatório: ' + error.message);
     } finally {
         connection.release();
     }
 }
 
 // Função para verificar a autenticidade do documento usando o ID
-export const autenticarFrequenciaService = async (documentId) => {
+export const verificarRelatorioService = async (documentId) => {
     
-    // Recupera a assinatura, pdf e código do professor usando o ID do documento
+    // Recupera a assinatura, relatório e código do professor usando o ID do documento
     const [result] = await connection.query(`
-    SELECT assinatura_professor, pdf, codigo_professor FROM FREQUENCIA WHERE id = ?`, [documentId]);
+    SELECT assinatura_professor, pdf, codigo_professor FROM RELATORIO WHERE id = ?`, [documentId]);
 
     if (result.length === 0) {
-        throw new Error('Documento não encontrado.');
+        throw new Error('Professor não encontrado.');
     }
 
     const assinatura = result[0].assinatura_professor;
@@ -70,12 +70,6 @@ export const autenticarFrequenciaService = async (documentId) => {
 
     // Recupera a chave pública do professor
     const [chaves] = await connection.query(`SELECT chave_publica FROM CHAVES_PROFESSOR WHERE codigo_professor = ?`, [codigo_professor]);
-
-    if (chaves.length == 0) {
-        throw new Error('Chaves não encontradas.')
-    }
-
-    const chavePublica = chaves[0].chave_publica;
 
     // Verifica a assinatura digital
     const verify = crypto.createVerify('SHA256');
@@ -90,7 +84,7 @@ export const autenticarFrequenciaService = async (documentId) => {
     return isValid;
 };
 
-export const enviarFrequenciaParaAssinatura = async (dados, codigo_usuario) => {
+export const enviarRelatorioParaAssinatura = async (dados, codigo_usuario) => {
 
     const connection = await pool.getConnection();
     console.log('codigo_usuario:', codigo_usuario);
@@ -117,7 +111,7 @@ export const enviarFrequenciaParaAssinatura = async (dados, codigo_usuario) => {
 
         // Insere os dados parciais no banco de dados
         const query = `
-            INSERT INTO FREQUENCIA
+            INSERT INTO RELATORIO
             (codigo_aluno, codigo_professor, dados_form)
             VALUES (?, ?, ?)
         `;
@@ -125,10 +119,47 @@ export const enviarFrequenciaParaAssinatura = async (dados, codigo_usuario) => {
         const values = [codigo_usuario, codigo_professor, dadosJSON];
         await connection.query(query, values);
 
-        return { message: 'Documento de frequência enviado para assinatura' };
+        return { message: 'Relatório enviado para assinatura' };
     } catch (error) {
         throw new Error('Erro ao enviar documento para assinatura: ' + error.message);
     } finally {
         connection.release();
     }
+};
+
+// Função para verificar a autenticidade do documento usando o ID
+export const autenticarRelatorioService = async (documentId) => {
+    
+    // Recupera a assinatura, relatório e código do professor usando o ID do documento
+    const [result] = await connection.query(`
+    SELECT assinatura_professor, pdf, codigo_professor FROM RELATORIO WHERE id = ?`, [documentId]);
+
+    if (result.length === 0) {
+        throw new Error('Documento não encontrado.');
+    }
+
+    const assinatura = result[0].assinatura_professor;
+    const pdf = result[0].pdf;
+    const codigo_professor = result[0].codigo_professor;
+
+    // Recupera a chave pública do professor
+    const [chaves] = await connection.query(`SELECT chave_publica FROM CHAVES_PROFESSOR WHERE codigo_professor = ?`, [codigo_professor]);
+
+    if (chaves.length == 0) {
+        throw new Error('Chaves não encontradas.')
+    }
+
+    const chavePublica = chaves[0].chave_publica;
+    
+    // Verifica a assinatura digital
+    const verify = crypto.createVerify('SHA256');
+    verify.update(pdf);
+    verify.end();
+
+    const isValid = verify.verify({
+        key: chavePublica,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+    }, assinatura);
+
+    return isValid;
 };

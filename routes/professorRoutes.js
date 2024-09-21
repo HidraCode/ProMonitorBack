@@ -1,16 +1,22 @@
 import express from 'express';
-import { 
+import {
     createCoordenador,
     createProfessor,
     getAllCoordenadores,
     getAllProfessores,
     updateProfessor,
+    createDisciplina,
+    createMonitoria,
 } from '../controllers/professorController.js';
-import {
-    gerarChavesProfessor,
-    assinarDocumento,
-} from '../controllers/assinaturaController.js';
+
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
+
+// Middleware para upload de arquivos
+import multer from 'multer';
+
+// Configuração do Multer
+const storage = multer.memoryStorage(); // Armazena arquivos na memória
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -295,7 +301,8 @@ router.put('/criar-coordenador/:codigo_professor', createCoordenador);
  */
 router.get('/coordenadores', getAllCoordenadores);
 
-router.post('/gerar-chaves', gerarChavesProfessor);
-router.post('/assinar-frequencia', assinarDocumento);
+router.post('/disciplina/create', createDisciplina); //Criar disciplina
+
+router.post('/monitoria/create', createMonitoria); //Criar monitoria
 
 export default router;

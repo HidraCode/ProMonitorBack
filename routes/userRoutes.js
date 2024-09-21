@@ -1,6 +1,7 @@
 // routes/userRoutes.js
 import express from 'express';
-import { getAllUsers, createUser } from '../controllers/userController.js';
+import { getAllUsers, createUser, getUser } from '../controllers/userController.js';
+import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -69,5 +70,7 @@ const router = express.Router();
 // Definir rotas
 router.get('/', getAllUsers);
 //router.post('/', createUser);
+
+router.get('/personal-data', authenticateToken, getUser)
 
 export default router;

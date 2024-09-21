@@ -1,11 +1,12 @@
-import { 
-    getAllMonitoresService, 
-    getActiveMonitoresService, 
+import {
+    getAllMonitoresService,
+    getActiveMonitoresService,
     getInactiveMonitoresService,
-    getMonitorService, 
+    getMonitorService,
     createMonitorService,
-    updateMonitorService, 
-    getMonitoresProfessorService
+    updateMonitorService,
+    getMonitoriaService,
+    getMonitoresProfessorService,
 } from "../services/monitorService.js";
 
 // Controlador para obter todos os monitores
@@ -87,3 +88,15 @@ export const updateMonitor = async (req, res) => {
         return res.status(500).json(error.message);
     }
 };
+
+export const getMonitoria = async (req, res) => {
+    const codigo_usuario = req.user.codigo_usuario;
+    
+    try {
+        const result = await getMonitoriaService(codigo_usuario)
+        res.status(200).json(result);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

@@ -4,7 +4,8 @@ import {
     getEditalService, 
     getEditalLinkService, 
     createEditalService, 
-    updateEditalService 
+    updateEditalService,
+    getEditaisByProfessorService
 } from "../services/editalService.js";
 
 // Controlador para obter todos os editais
@@ -14,6 +15,18 @@ export const getAllEditais = async (req, res) => {
         return res.status(200).json(editais);
     } catch (error) {
         return res.status(500).json(error.message);
+    }
+};
+
+// Controlador para obter editais filtrados por professor
+export const getEditaisByProfessor = async (req, res) => {
+    try {
+        const { codigo_professor } = req.params;
+        const editais = await getEditaisByProfessorService(codigo_professor);
+        return res.status(200).json(editais);
+    } catch (error) {
+        console.error('Erro ao obter editais:', error.message);
+        return res.status(500).json({ message: 'Erro ao obter editais' });
     }
 };
 

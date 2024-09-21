@@ -71,7 +71,7 @@ CREATE TABLE INSCRICAO (
 
 DROP TABLE IF EXISTS MONITORIA;
 CREATE TABLE MONITORIA (
-    codigo_monitoria INT PRIMARY KEY,
+    codigo_monitoria INT PRIMARY KEY AUTO_INCREMENT,
     codigo_monitor INT,
     codigo_disciplina INT,
     data_inicio DATE,
@@ -83,40 +83,40 @@ CREATE TABLE MONITORIA (
 
 DROP TABLE IF EXISTS TAREFA;
 CREATE TABLE TAREFA (
-    codigo_tarefa INT PRIMARY KEY,
-    codigo_monitoria INT,
-    codigo_professor INT, -- Professor que postou a tarefa
-    descricao TEXT,
-    data_atribuicao DATE,
+    codigo_tarefa INT PRIMARY KEY AUTO_INCREMENT,
+    codigo_monitoria INT NOT NULL,
+    codigo_professor INT NOT NULL,
+    titulo TEXT NOT NULL,
+    descricao TEXT NOT NULL,
+    data_prazo DATE,
+    data_atribuicao DATE NOT NULL,
     data_conclusao DATE,
-    status VARCHAR(50),
+    anexos_professor LONGBLOB DEFAULT NULL,
+    status ENUM('concluida', 'pendente', 'atrasada') NOT NULL,  
     FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
+);
+
+DROP TABLE IF EXISTS ANEXOS_RESPOSTAS;
+CREATE TABLE ANEXOS_RESPOSTAS (
+    codigo_tarefa INT,
+    codigo_monitoria INT,
+    anexos_monitor LONGBLOB NOT NULL,
+    PRIMARY KEY (codigo_tarefa, codigo_monitoria),
+    FOREIGN KEY (codigo_tarefa) REFERENCES TAREFA(codigo_tarefa),
+    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria)
 );
 
 DROP TABLE IF EXISTS DESEMPENHO;
 CREATE TABLE DESEMPENHO (
-    codigo_desempenho INT,
-    codigo_monitoria INT,
+    codigo_desempenho INT AUTO_INCREMENT,
+    codigo_monitor INT,
     codigo_professor INT,
-    nota INT,
     comentario TEXT,
     data_avaliacao DATE,
-    PRIMARY KEY (codigo_desempenho, codigo_monitoria),
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
+    PRIMARY KEY (codigo_desempenho),
+    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
-);
-
-DROP TABLE IF EXISTS RELATORIO;
-CREATE TABLE RELATORIO (
-    codigo_relatorio INT,
-    codigo_monitoria INT,
-    codigo_monitor INT,
-    descricao TEXT,
-    data_postagem DATE,
-    PRIMARY KEY (codigo_relatorio, codigo_monitoria),
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
-    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
 );
 
 -- tabela para armazenar os documentos de frequência
@@ -124,10 +124,27 @@ CREATE TABLE FREQUENCIA (
     id INT AUTO_INCREMENT PRIMARY KEY,
     codigo_aluno INT,
     codigo_professor INT,
+    dados_form TEXT NULL, -- armazena os dados da frequencia para persistir no envio do monitor ao professor
     pdf LONGBLOB,
     assinatura_professor TEXT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
-    data_assinatura TIMESTAMP NULL
+    data_assinatura TIMESTAMP NULL,
+    FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario),
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
+);
+
+-- tabela para armazenar os documentos de relatório final
+CREATE TABLE RELATORIO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo_aluno INT,
+    codigo_professor INT,
+    dados_form TEXT NULL, -- armazena os dados da frequencia para persistir no envio do monitor ao professor
+    pdf LONGBLOB,
+    assinatura_professor TEXT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
+    data_assinatura TIMESTAMP NULL,
+    FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario),
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
 -- tabela para armazenar as chaves dos professores

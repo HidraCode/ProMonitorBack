@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Frequência Mensal - Gestão de Monitoria</title>
+    <style>
+        html,
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            margin-left: 20px;
+            margin-right: 20px;
+            height: 100vh;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid black;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        .centered-text td,
+        .centered-text th {
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .header-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .header-table .th {
+            border: none;
+        }
+
+        .header-table td {
+            text-align: center;
+            font-weight: bold;
+            font-family: "Times New Roman", Times, serif;
+            vertical-align: middle;
+            font-size: 11px;
+            border: none;
+        }
+
+        .footer-table {
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        .footer-table td {
+            text-align: center;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            background-color: #dddddd;
+            font-family: "Times New Roman", Times, serif;
+            padding: 2px;
+            margin-top: 1px;
+        }
+
+        .identification-table td {
+            border: none;
+        }
+
+        .no-border td {
+            border: none;
+        }
+
+        .assinatura {
+            text-align: center;
+            font-style: italic;
+        }
+
+        .page:last-of-type {
+            page-break-after: auto
+        }
+
+        .textarea-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 40px;
+            border: none;
+            box-sizing: border-box;
+            resize: none;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="header-table">
+        <tr>
+            <td>
+                <img src="{{brasao}}" alt="Brasão" style="width: 80px;">
+            </td>
+            <td>
+                <p>UNIVERSIDADE FEDERAL RURAL DE PERNAMBUCO <br>
+                    PRÓ-REITORIA DE ENSINO DE GRADUAÇÃO <br>
+                    COORDENAÇÃO GERAL DE CURSOS DE GRADUAÇÃO<br>
+                    PROGRAMA DE MONITORIA
+                </p>
+            </td>
+        </tr>
+    </table>
+    <table class="footer-table">
+        <tr>
+            <td>
+                <p><b>FREQUÊNCIA MENSAL</b><br>
+                    (FORMULÁRIO Nº 06)
+                </p>
+            </td>
+            <td>
+                <p><b>MÊS INICIAL/ANO</b><br>
+                {{data_inicio}}
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Seção 1: Identificação do Aluno -->
+    <div class="section-title">1. IDENTIFICAÇÃO DO MONITOR</div>
+    <table class="identification-table">
+        <tr>
+            <td>NOME: {{nome}}</td>
+        </tr>
+        <tr>
+            <td>DEPARTAMENTO/ÁREA: {{departamento}}</td>
+        </tr>
+        <tr>
+            <td>ORIENTADOR: {{nome_professor}}</td>
+        </tr>
+    </table>
+
+    <!-- Seção 2: Monitoria Desejada -->
+    <div class="section-title">2. FREQUÊNCIA</div>
+    <ul>
+        <li>Registro da freqüência mensal deve ser do dia 01 ao dia 30 de cada mês</li>
+        <li>A freqüência semanal do Monitor é de 12 horas, sendo combinada entre Orientador e Monitor. Esta usualmente
+            totalizará 48 a 54 horas mensais, conforme o número de dias de atividade no período.</li>
+        <b>
+            <li>Não havendo registro de faltas anotadas pelo Orientador, será considerada freqüência integral aquela com
+                valores totais iguais ou maiores que 48 horas.</li>
+            <li>O Departamento deverá entregar a freqüência na PREG até o dia 21 de cada mês.</li>
+        </b>
+    </ul>
+    <table class="centered-text">
+        <thead>
+            <tr class="section-title">
+                <th>Dia do Mês</th>
+                <th>ASSINATURA</th>
+                <th>TOTAL DE HORAS</th>
+                <th>Dia do Mês</th>
+                <th>ASSINATURA</th>
+                <th>TOTAL DE HORAS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each dias1_15}}
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" style="text-align: right"><b>TOTAL: </b></td>
+                <td>{{total_horas}}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Seção 3: Informações Adicionais sobre o Candidato -->
+    <div class="section-title">3. PARECER DO ORIENTADOR: </div>
+    <table>
+        <tbody>
+            <tr>
+                <td style="padding: 2px;">DESEMPENHO DO MONITOR: {{desempenho}}</td>
+            </tr>
+            <tr>
+                <td class="textarea-container">
+                    <textarea readonly>Observações: {{observacao}}</textarea>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Seção 4: Ciência das Normas de Monitoria -->
+    <div class="section-title">4. ASSINATURA DO ORIENTADOR: </div>
+    <table>
+        <tr>
+            <td style="text-align: center;">
+                <p>RECIFE, {{dataAssinatura}}</p>
+            </td>
+            <td style="text-align: center;">
+                <p class="assinatura">
+                    Documento assinado eletronicamente por {{nome_professor}}
+                    <br> Professor Orientador
+                </p>
+            </td>
+        </tr>
+    </table>
+    <p>
+        A) O Departamento deverá enviar todas as freqüências mensais à PREG até o dia 21 de cada mês, sob pena de
+        atraso no pagamento dos monitores, devido à impossibilidade de inclusão na folha de pagamento.
+    </p>
+    <p><b>A autenticidade deste documento pode ser conferida no site:
+            http://localhost:5173/verificar-documento/frequencia/{{documentId}}</b></p>
+</body>
+
+</html>

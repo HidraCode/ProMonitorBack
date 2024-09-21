@@ -30,6 +30,8 @@ export const loginUserService = async (email, senha, tipo_usuario) => {
             }
 
             const monitorData = monitor[0];
+            console.log('Monitor encontrado:', monitorData);  // Adicione este log para ver os dados retornados
+
             const isPasswordValid = await bcrypt.compare(senha, monitorData.senha);
 
             if (!isPasswordValid) {
@@ -40,7 +42,8 @@ export const loginUserService = async (email, senha, tipo_usuario) => {
             const payload = { codigo_usuario: monitorData.codigo_usuario, role: tipo_usuario, email };
             // Cria o token
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-    
+            console.log('Token gerado:', token);  // Verifique se o token está sendo gerado corretamente
+
             return {
                 codigo_usuario: monitorData.codigo_usuario,
                 role: tipo_usuario,
