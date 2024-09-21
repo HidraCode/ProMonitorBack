@@ -1,20 +1,22 @@
 import express from 'express';
-import {
+import multer from 'multer';
+import { 
+    atribuirTarefa,
     createCoordenador,
     createProfessor,
     getAllCoordenadores,
     getAllProfessores,
     updateProfessor,
+    atribuirMaterialDeApoio,
     createDisciplina,
-    createMonitoria,
+    createMonitoria
 } from '../controllers/professorController.js';
-
+import { assinarFrequencia, assinarRelatorio } from '../controllers/assinaturaController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
-// Middleware para upload de arquivos
-import multer from 'multer';
-
 // Configuração do Multer
+import multer from 'multer';
+// Middleware para upload de arquivos
 const storage = multer.memoryStorage(); // Armazena arquivos na memória
 const upload = multer({ storage: storage });
 
@@ -300,6 +302,12 @@ router.put('/criar-coordenador/:codigo_professor', createCoordenador);
  *         description: Erro interno no servidor
  */
 router.get('/coordenadores', getAllCoordenadores);
+
+router.post('/atribuir-tarefa', upload.single('arquivo_aux'), atribuirTarefa);
+
+router.post('/atribuir-material', upload.single('arquivo_aux'), atribuirMaterialDeApoio);
+
+router.post('/assinar-frequencia', assinarFrequencia);
 
 router.post('/disciplina/create', createDisciplina); //Criar disciplina
 

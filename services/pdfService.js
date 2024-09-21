@@ -74,7 +74,7 @@ export const generateFrequenciaPDF = async (dados, documentId) => {
     // Função para gerar o PDF a partir do HTML e retornar como buffer
     const generatePdfFromHtml = (htmlContent) => {
         return new Promise((resolve, reject) => {
-            pdf.create(htmlContent, options).toBuffer((err, buffer) => {
+            pdf.create(htmlContent, optionsFrequencia).toBuffer((err, buffer) => {
                 if (err) return reject(err);
                 resolve(buffer);
             });
@@ -115,7 +115,7 @@ export const generateRelatorioPDF = async (dados, documentId) => {
     // Função para gerar o PDF a partir do HTML e retornar como buffer
     const generatePdfFromHtml = (htmlContent) => {
         return new Promise((resolve, reject) => {
-            pdf.create(htmlContent, options).toBuffer((err, buffer) => {
+            pdf.create(htmlContent, optionsRelatorio).toBuffer((err, buffer) => {
                 if (err) return reject(err);
                 resolve(buffer);
             });
@@ -129,11 +129,18 @@ export const generateRelatorioPDF = async (dados, documentId) => {
 };
 
 // Formatação do PDF
-const options = {
+const optionsFrequencia = {
     format: 'A4',
     height: "11.7in", // Altura do papel A4
     width: "8.3in",    // Largura do papel A4
-    border: '75px'     // Define uma margem de 50px em torno da página
+    border: '0px'     // Sem margem
+};
+
+const optionsRelatorio = {
+    format: 'A4',
+    height: "11.7in", // Altura do papel A4
+    width: "8.3in",    // Largura do papel A4
+    border: '75px'     // Define uma margem de 75px em torno da página
 };
 
 // Função para substituir quebras de linha por <br>

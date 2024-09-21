@@ -4,13 +4,14 @@ import {
     updateProfessorService,
     createCoordenadorService,
     getAllCoordenadoresService,
+    atribuirTarefaService,
+    atribuirMaterialDeApoioService,
     createDisciplinaService,
     createMonitoriaService,
 } from "../services/professorService.js";
 import {
     getChavePublicaDoProfessorService,
 } from "../services/assinaturaService.js"
-
 // Controlador para obter todos os professores
 export const getAllProfessores = async (req, res) => {
     try {
@@ -67,6 +68,36 @@ export const getAllCoordenadores = async (req, res) => {
         return res.status(500).json({ message: 'Erro ao obter coordenadores: ' + error.message });
     }
 }
+
+// Controlador para atribuir tarefa a monitor
+export const atribuirTarefa = async (req, res) => {
+    const { codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, status } = req.body;
+    const arquivo_aux = req.file;
+
+    try {
+        // Chama o serviço para atribuir a tarefa
+        const result = await atribuirTarefaService(codigo_monitor, codigo_professor, descricao, data_conclusao, disciplina, arquivo_aux, status);
+
+        return res.status(201).json({ message: 'Tarefa criada com sucesso!', result });
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao atribuir tarefa.' });
+    }
+};
+
+// Controlador para atribuir tarefa a monitor
+export const atribuirMaterialDeApoio = async (req, res) => {
+    const { codigo_monitor, codigo_professor, titulo, descricao, disciplina } = req.body;
+    const arquivo_aux = req.file;
+
+    try {
+        // Chama o serviço para atribuir a tarefa
+        const result = await atribuirMaterialDeApoioService(codigo_monitor, codigo_professor, titulo, descricao, disciplina, arquivo_aux);
+
+        return res.status(201).json({ message: 'Material de apoio criado com sucesso!', result });
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao atribuir material de apoio.' });
+    }
+};
 
 // Controlador para criar um novo professor
 export const createDisciplina = async (req, res) => {

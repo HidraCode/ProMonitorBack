@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import {
     getAllMonitores,
     getActiveMonitores,
@@ -7,12 +8,22 @@ import {
     createMonitor,
     updateMonitor,
     getMonitoresProfessor,
-    getMonitoria
+    getTarefasMonitor,
+    downloadArquivoTarefa,
+    getMonitoria,
+    getMateriaisDeApoioMonitor,
+    updateTarefaMonitor,
+    getTarefa,
+    getMonitorTarefasPorStatus,
+    getMaterialDeApoio,
+    downloadArquivoMaterial
 } from "../controllers/monitorController.js";
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
-
+// Configuração do multer para upload de arquivos
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 /**
  * @swagger
  * tags:
@@ -604,5 +615,32 @@ router.post('/create', createMonitor);
 router.put('/:codigo_monitor', authenticateToken, authorizeRoles('monitor'), updateMonitor);
 
 router.get('/monitoria/dados', authenticateToken, authorizeRoles('monitor'), getMonitoria)
+
+// Rota para obter todas as tarefas atribuídas a um monitor
+router.get('/tarefas/:codigo_usuario', authenticateToken, authorizeRoles('monitor'), getTarefasMonitor);
+
+// Rota para baixar o arquivo auxiliar de uma tarefa
+router.get('/tarefas/:codigo_usuario/:codigo_tarefa/download', authenticateToken, authorizeRoles('monitor'), downloadArquivoTarefa);
+
+// Rota para baixar o arquivo auxiliar de uma tarefa
+router.get('/material-de-apoio/:codigo_usuario/:codigo_material/download', authenticateToken, authorizeRoles('monitor'), downloadArquivoMaterial);
+
+// Rota para obter os materias de apoio de um monitor
+router.get('/material-de-apoio/:codigo_usuario', authenticateToken, authorizeRoles('monitor'), getMateriaisDeApoioMonitor);
+
+// Rota para obter uma tarefa de um monitor por status
+router.get('/tarefas/:codigo_usuario/status/:status', authenticateToken, authorizeRoles('monitor'), getMonitorTarefasPorStatus)
+
+// Rota para obter um material de apoio por código
+router.get('/material-de-apoio/:codigo_usuario/:codigo_material', authenticateToken, authorizeRoles('monitor'), getMaterialDeApoio);
+
+// // Rota para acessar os anexos da tarefa
+// router.get('/tarefas/:codigo_tarefa/anexos', authenticateToken, getAnexosTarefa);
+
+// Rota para obter uma tarefa por código
+router.get('/tarefas/:codigo_usuario/:codigo_tarefa', authenticateToken, getTarefa);
+
+// Rota para atualizar uma tarefa dada a uma monitoria com a resposta do monitor
+router.put('/tarefas/:codigo_tarefa/submit', authenticateToken, authorizeRoles('monitor'), upload.array('files', 3), updateTarefaMonitor)
 
 export default router;

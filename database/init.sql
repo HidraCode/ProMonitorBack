@@ -72,6 +72,7 @@ CREATE TABLE INSCRICAO (
 DROP TABLE IF EXISTS MONITORIA;
 CREATE TABLE MONITORIA (
     codigo_monitoria INT PRIMARY KEY AUTO_INCREMENT,
+    codigo_monitoria INT PRIMARY KEY AUTO_INCREMENT,
     codigo_monitor INT,
     codigo_disciplina INT,
     data_inicio DATE,
@@ -84,27 +85,40 @@ CREATE TABLE MONITORIA (
 DROP TABLE IF EXISTS TAREFA;
 CREATE TABLE TAREFA (
     codigo_tarefa INT PRIMARY KEY AUTO_INCREMENT,
-    codigo_monitoria INT NOT NULL,
-    codigo_professor INT NOT NULL,
+    codigo_monitor INT,
+    codigo_professor INT, -- Professor que postou a tarefa
+    descricao TEXT,
+    data_atribuicao DATE NULL,
+    data_conclusao DATE,
+    disciplina VARCHAR(40),
+    arquivo_aux LONGBLOB,
+    status VARCHAR(50) NULL,
+    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
+);
+
+DROP TABLE IF EXISTS MATERIAL_APOIO;
+CREATE TABLE MATERIAL_APOIO (
+    codigo_material INT PRIMARY KEY AUTO_INCREMENT,
+    codigo_monitor INT,
+    codigo_professor INT, -- Professor que postou o material de apoio
     titulo TEXT NOT NULL,
     descricao TEXT NOT NULL,
-    data_prazo DATE,
-    data_atribuicao DATE NOT NULL,
-    data_conclusao DATE,
-    anexos_professor LONGBLOB DEFAULT NULL,
-    status ENUM('concluida', 'pendente', 'atrasada') NOT NULL,  
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
+    data_atribuicao DATE NULL,
+    disciplina VARCHAR(40),
+    arquivo_aux LONGBLOB,
+    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
 DROP TABLE IF EXISTS ANEXOS_RESPOSTAS;
 CREATE TABLE ANEXOS_RESPOSTAS (
     codigo_tarefa INT,
-    codigo_monitoria INT,
+    codigo_monitor INT,
     anexos_monitor LONGBLOB NOT NULL,
-    PRIMARY KEY (codigo_tarefa, codigo_monitoria),
+    PRIMARY KEY (codigo_tarefa, codigo_monitor),
     FOREIGN KEY (codigo_tarefa) REFERENCES TAREFA(codigo_tarefa),
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria)
+    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
 );
 
 DROP TABLE IF EXISTS DESEMPENHO;
