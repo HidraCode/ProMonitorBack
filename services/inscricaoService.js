@@ -19,7 +19,12 @@ export const getAllInscricoesFromAlunoService = async (codigo_usuario) => {
     const connection = await pool.getConnection();
 
     try {
-        const [rows] = await connection.query('SELECT * FROM INSCRICAO WHERE codigo_aluno = ?', [codigo_usuario]);
+        const [rows] = await connection.query(`
+            SELECT i.*, e.titulo, e.descricao 
+            FROM INSCRICAO i
+            JOIN EDITAL e ON i.codigo_edital = e.codigo_edital
+            WHERE codigo_aluno = ?
+        `, [codigo_usuario]);
         return rows;
     } catch (error) {
         throw new Error('Erro ao obter inscrições do aluno: ' + error.message);
