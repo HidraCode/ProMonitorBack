@@ -1,6 +1,6 @@
 // routes/userRoutes.js
 import express from 'express';
-import { getAllUsers, createUser, getUser } from '../controllers/userController.js';
+import { getAllUsers, createUser } from '../controllers/userController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
