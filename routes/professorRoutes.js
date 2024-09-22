@@ -7,15 +7,12 @@ import {
     getAllCoordenadores,
     getAllProfessores,
     updateProfessor,
-    atribuirMaterialDeApoio,
     createDisciplina,
     createMonitoria
 } from '../controllers/professorController.js';
 import { assinarFrequencia, assinarRelatorio } from '../controllers/assinaturaController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
-// Configuração do Multer
-import multer from 'multer';
 // Middleware para upload de arquivos
 const storage = multer.memoryStorage(); // Armazena arquivos na memória
 const upload = multer({ storage: storage });
@@ -305,12 +302,12 @@ router.get('/coordenadores', getAllCoordenadores);
 
 router.post('/atribuir-tarefa', upload.single('arquivo_aux'), atribuirTarefa);
 
-router.post('/atribuir-material', upload.single('arquivo_aux'), atribuirMaterialDeApoio);
-
-router.post('/assinar-frequencia', assinarFrequencia);
-
 router.post('/disciplina/create', createDisciplina); //Criar disciplina
 
 router.post('/monitoria/create', createMonitoria); //Criar monitoria
+
+router.post('/:codigo_usuario/assinar-relatorio', assinarRelatorio);
+
+router.post('/:codigo_usuario/assinar-frequencia', assinarFrequencia);
 
 export default router;

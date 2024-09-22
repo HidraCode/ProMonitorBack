@@ -175,59 +175,6 @@ export const getTarefasMonitorService = async (codigo_usuario) => {
     }
 }
 
-// Serviço pra obter as tarefas de um monitor por status
-export const getMonitorTarefasPorStatusService = async (status, codigo_usuario) => {
-    const connection = await pool.getConnection();
-
-    try {
-        // Obtendo o código do monitor a partir do código do aluno (usuário)
-        const [monitorResult] = await connection.query(`
-            SELECT codigo_monitor 
-            FROM MONITOR 
-            WHERE codigo_aluno = ? AND ativo = 1`, [codigo_usuario]);
-
-        if (monitorResult.length === 0) {
-            throw new Error('Monitor não encontrado para o código de usuário fornecido.');
-        }
-
-        const codigo_monitor = monitorResult[0].codigo_monitor;
-
-        // Obtendo as tarefas associadas a essa monitoria
-        const [tarefaResult] = await connection.query(`
-            SELECT * 
-            FROM TAREFA 
-            WHERE codigo_monitor = ? AND status = ?`, [codigo_monitor, status]);
-
-        console.log('Resultado das tarefas:', tarefaResult);
-
-        return tarefaResult;
-    } catch (error) {
-        throw new Error('Erro ao obter as tarefas do monitor: ' + error.message);
-    } finally {
-        connection.release();
-    }
-}
-
-// Serviço para obter todas os materiais de apoio atribuídos a um monitor
-export const getMateriaisDeApoioMonitorService = async (codigo_usuario) => {
-    const connection = await pool.getConnection();
-    try {
-        const [monitor] = await connection.query(`SELECT codigo_monitor FROM MONITOR WHERE codigo_aluno = ?`, [codigo_usuario]);
-        if (monitor.length === 0){
-            throw new Error ('Monitor não encontrado.')
-        }
-        const monitorCode = monitor[0].codigo_monitor;
-        const [materialApoio] = await connection.query(`SELECT * FROM MATERIAL_APOIO WHERE codigo_monitor = ?`, [monitorCode]);
-        if (materialApoio.length === 0){
-            throw new Error ('Material de apoio não encontrado.');
-        }
-
-        return materialApoio;
-    } catch (error) {
-        throw new Error('Erro ao buscar materiais de apoio do monitor: ' + error.message);
-    }
-}
-
 // Serviço para obter os dados da monitoria de um monitor
 export const getMonitoriaService = async (codigo_usuario) => {
     const connection = await pool.getConnection();  // Se conecta ao banco de dados
@@ -270,48 +217,6 @@ export const getMonitoriaService = async (codigo_usuario) => {
 
         return { nome_monitor: dadosMonitoria.nome, tipo_monitoria: dadosMonitoria.tipo_monitoria, 
             orientador: professor.nome, disciplina:edital.disciplina, data_inicio: dadosMonitoria.data_inicio, data_fim: dadosMonitoria.data_fim, ativo: dadosMonitoria.ativo};
-    } finally {
-        connection.release();
-    }
-};
-
-// Serviço para obter a tarefa do monitor por codigo_tarefa
-export const getTarefaService = async (codigo_tarefa) => {
-    const connection = await pool.getConnection();
-    try {
-        // Obtem a tarefa juntamente com o nome do professor que a criou
-        const [tarefa] = await connection.query(`
-            SELECT TAREFA.*, USUARIO.nome AS nome_professor 
-            FROM TAREFA 
-            JOIN USUARIO ON TAREFA.codigo_professor = USUARIO.codigo_usuario
-            WHERE TAREFA.codigo_tarefa = ?`, [codigo_tarefa]);
-
-        // Verifica se a tarefa foi encontrada
-        if (!tarefa) {
-            throw new Error('Tarefa não encontrada');
-        }
-
-        // Função para formatar a data
-        const formatDate = (dateString) => {
-            const date = new Date(dateString);
-            if (isNaN(date.getTime())) {
-                return dateString; // Retorna a string original se não for uma data válida
-            }
-            const day = String(date.getUTCDate()).padStart(2, '0');
-            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-            const year = date.getUTCFullYear();
-            return `${day}/${month}/${year}`; // Formato: dd/MM/yyyy
-        };
-
-        const formattedTarefa = tarefa.map(tarefa => ({
-            ...tarefa,
-            data_atribuicao: formatDate(tarefa.data_atribuicao),
-            data_conclusao: formatDate(tarefa.data_conclusao)
-        }));
-
-        return formattedTarefa;
-    } catch (error) {
-        throw new Error('Erro ao obter a tarefa: ' + error.message);
     } finally {
         connection.release();
     }
@@ -364,7 +269,7 @@ export const updateTarefaMonitorService = async (files, codigo_usuario, codigo_t
         }
 
         if (anexos_monitor) {
-            await connection.query(`INSERT INTO ANEXOS_TAREFA (codigo_tarefa, codigo_monitor, anexos_monitor) VALUES (?, ?, ?)`,
+            await connection.query(`INSERT INTO ANEXOS_RESPOSTAS (codigo_tarefa, codigo_monitor, anexos_monitor) VALUES (?, ?, ?)`,
                 [codigo_tarefa, codigo_monitor, anexos_monitor])
         }
         return { updatedTarefa, anexos_monitor };

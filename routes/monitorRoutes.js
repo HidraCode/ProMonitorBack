@@ -11,13 +11,11 @@ import {
     getTarefasMonitor,
     downloadArquivoTarefa,
     getMonitoria,
-    getMateriaisDeApoioMonitor,
     updateTarefaMonitor,
     getTarefa,
-    getMonitorTarefasPorStatus,
-    getMaterialDeApoio,
-    downloadArquivoMaterial
 } from "../controllers/monitorController.js";
+import { enviarFrequencia } from "../controllers/frequenciaController.js";
+import { enviarRelatorio } from '../controllers/relatorioController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -622,25 +620,14 @@ router.get('/tarefas/:codigo_usuario', authenticateToken, authorizeRoles('monito
 // Rota para baixar o arquivo auxiliar de uma tarefa
 router.get('/tarefas/:codigo_usuario/:codigo_tarefa/download', authenticateToken, authorizeRoles('monitor'), downloadArquivoTarefa);
 
-// Rota para baixar o arquivo auxiliar de uma tarefa
-router.get('/material-de-apoio/:codigo_usuario/:codigo_material/download', authenticateToken, authorizeRoles('monitor'), downloadArquivoMaterial);
-
-// Rota para obter os materias de apoio de um monitor
-router.get('/material-de-apoio/:codigo_usuario', authenticateToken, authorizeRoles('monitor'), getMateriaisDeApoioMonitor);
-
-// Rota para obter uma tarefa de um monitor por status
-router.get('/tarefas/:codigo_usuario/status/:status', authenticateToken, authorizeRoles('monitor'), getMonitorTarefasPorStatus)
-
-// Rota para obter um material de apoio por código
-router.get('/material-de-apoio/:codigo_usuario/:codigo_material', authenticateToken, authorizeRoles('monitor'), getMaterialDeApoio);
-
-// // Rota para acessar os anexos da tarefa
-// router.get('/tarefas/:codigo_tarefa/anexos', authenticateToken, getAnexosTarefa);
-
 // Rota para obter uma tarefa por código
 router.get('/tarefas/:codigo_usuario/:codigo_tarefa', authenticateToken, getTarefa);
 
 // Rota para atualizar uma tarefa dada a uma monitoria com a resposta do monitor
-router.put('/tarefas/:codigo_tarefa/submit', authenticateToken, authorizeRoles('monitor'), upload.array('files', 3), updateTarefaMonitor)
+router.put('/tarefas/:codigo_usuario/:codigo_tarefa/submit', upload.array('files', 3), updateTarefaMonitor)
+
+router.post('/enviar-relatorio', authenticateToken, authorizeRoles('monitor'), enviarRelatorio);
+
+router.post('/enviar-frequencia', authenticateToken, authorizeRoles('monitor'), enviarFrequencia);
 
 export default router;

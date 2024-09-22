@@ -128,18 +128,3 @@ export const gerarChavesDoProfessor = async (codigo_professor) => {
         throw new Error('Erro ao gerar chaves: ' + error.message);
     }
 };
-
-// Serviço para obter a chave pública do professor
-export const getChavePublicaDoProfessorService = async (codigo_professor) => {
-    try {
-        const connection = await pool.getConnection();
-
-        const [chaveResult] = await connection.query('SELECT chave_publica FROM CHAVES_PROFESSOR WHERE codigo_professor = ?', [codigo_professor]);
-        const chavePublica = chaveResult[0].chave_publica;
-
-        connection.release();
-        return chavePublica;
-    } catch (error) {
-        throw new Error('Erro ao gerar chaves: ' + error.message);
-    }
-};

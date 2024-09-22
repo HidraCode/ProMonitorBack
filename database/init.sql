@@ -72,7 +72,6 @@ CREATE TABLE INSCRICAO (
 DROP TABLE IF EXISTS MONITORIA;
 CREATE TABLE MONITORIA (
     codigo_monitoria INT PRIMARY KEY AUTO_INCREMENT,
-    codigo_monitoria INT PRIMARY KEY AUTO_INCREMENT,
     codigo_monitor INT,
     codigo_disciplina INT,
     data_inicio DATE,
@@ -87,26 +86,13 @@ CREATE TABLE TAREFA (
     codigo_tarefa INT PRIMARY KEY AUTO_INCREMENT,
     codigo_monitor INT,
     codigo_professor INT, -- Professor que postou a tarefa
+    titulo VARCHAR(40),
     descricao TEXT,
-    data_atribuicao DATE NULL,
-    data_conclusao DATE,
+    data_conclusao DATE NULL,
     disciplina VARCHAR(40),
     arquivo_aux LONGBLOB,
-    status VARCHAR(50) NULL,
-    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
-    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
-);
-
-DROP TABLE IF EXISTS MATERIAL_APOIO;
-CREATE TABLE MATERIAL_APOIO (
-    codigo_material INT PRIMARY KEY AUTO_INCREMENT,
-    codigo_monitor INT,
-    codigo_professor INT, -- Professor que postou o material de apoio
-    titulo TEXT NOT NULL,
-    descricao TEXT NOT NULL,
-    data_atribuicao DATE NULL,
-    disciplina VARCHAR(40),
-    arquivo_aux LONGBLOB,
+    tipo ENUM ('tarefa', 'material'),
+    status ENUM('concluida', 'pendente', 'atrasada') DEFAULT NULL,  
     FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
@@ -119,18 +105,6 @@ CREATE TABLE ANEXOS_RESPOSTAS (
     PRIMARY KEY (codigo_tarefa, codigo_monitor),
     FOREIGN KEY (codigo_tarefa) REFERENCES TAREFA(codigo_tarefa),
     FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
-);
-
-DROP TABLE IF EXISTS DESEMPENHO;
-CREATE TABLE DESEMPENHO (
-    codigo_desempenho INT AUTO_INCREMENT,
-    codigo_monitor INT,
-    codigo_professor INT,
-    comentario TEXT,
-    data_avaliacao DATE,
-    PRIMARY KEY (codigo_desempenho),
-    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
-    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
 -- tabela para armazenar os documentos de frequência
