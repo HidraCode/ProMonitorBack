@@ -1,12 +1,14 @@
-import { 
-    getAllMonitoresService, 
-    getActiveMonitoresService, 
+import {
+    getAllMonitoresService,
+    getActiveMonitoresService,
     getInactiveMonitoresService,
-    getMonitorService, 
+    getMonitorService,
     createMonitorService,
     updateMonitorService, 
     getMonitoresProfessorService,
-    getTarefasMonitorService
+    getTarefasMonitorService,
+    getMonitoriaService,
+    updateTarefaMonitorService,
 } from "../services/monitorService.js";
 
 // Controlador para obter todos os monitores
@@ -91,14 +93,10 @@ export const updateMonitor = async (req, res) => {
 
 // Controlador para obter todas as tarefas de um monitor
 export const getTarefasMonitor = async (req, res) => {
-    const { codigo_monitor } = req.params;
+    const { codigo_usuario } = req.params;
     
     try {
-        const tarefas = await getTarefasMonitorService(codigo_monitor);
-        
-        if (tarefas.length === 0) {
-            return res.status(404).json({ message: 'Nenhuma tarefa encontrada para este monitor.' });
-        }
+        const tarefas = await getTarefasMonitorService(codigo_usuario);
 
         res.status(200).json(tarefas);
     } catch (error) {
@@ -106,12 +104,25 @@ export const getTarefasMonitor = async (req, res) => {
     }
 };
 
-// Controlador para baixar o arquivo auxiliar de uma tarefa específica
-export const downloadArquivoTarefa = async (req, res) => {
-    const { codigo_tarefa } = req.params;
+export const getMonitoria = async (req, res) => {
+    const codigo_usuario = req.user.codigo_usuario;
     
     try {
-        const tarefas = await getTarefasMonitorService(req.params.codigo_monitor);
+        const result = await getMonitoriaService(codigo_usuario)
+        res.status(200).json(result);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+// Controlador para baixar o arquivo auxiliar de uma tarefa específica
+export const downloadArquivoTarefa = async (req, res) => {
+    const { codigo_tarefa, codigo_usuario } = req.params;
+    
+    try {
+
+        const tarefas = await getTarefasMonitorService(codigo_usuario);
         const tarefa = tarefas.find(tarefa => tarefa.codigo_tarefa === parseInt(codigo_tarefa));
 
         if (!tarefa) {
@@ -125,12 +136,43 @@ export const downloadArquivoTarefa = async (req, res) => {
         }
 
         res.setHeader('Content-Type', 'application/pdf');
-        if (tarefa.tipo === 'tarefa')
-            res.setHeader('Content-Disposition', `attachment; filename="tarefa_${codigo_tarefa}.pdf"`);
-        else if (tarefa.tipo === 'material')
-            res.setHeader('Content-Disposition', `attachment; filename="material_apoio_${codigo_tarefa}.pdf"`);
+        res.setHeader('Content-Disposition', `attachment; filename="tarefa_${codigo_tarefa}.pdf"`);
         res.send(arquivo);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao baixar o arquivo.', error: error.message });
+    }
+};
+
+// Controlador para acessar uma tarefa específica
+export const getTarefa = async (req, res) => {
+    const { codigo_tarefa, codigo_usuario } = req.params;
+    
+    try {
+
+        const tarefas = await getTarefasMonitorService(codigo_usuario);
+        const tarefa = tarefas.find(tarefa => tarefa.codigo_tarefa === parseInt(codigo_tarefa));
+
+        if (!tarefa) {
+            return res.status(404).json({ message: 'Tarefa não encontrada.' });
+        }
+
+        res.status(200).json(tarefa);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao baixar o arquivo.', error: error.message });
+    }
+};
+
+// Controlador para quando um monitor concluir uma tarefa
+export const updateTarefaMonitor = async (req, res) => {
+    try {
+        // Processa arquivos enviados
+        const files = req.files; // Arquivos enviados, se existirem
+        const { codigo_tarefa, codigo_usuario } = req.params;
+
+        // Chama o serviço para atualizar uma nova tarefa
+        const updatedTarefa = await updateTarefaMonitorService(files, codigo_usuario, codigo_tarefa);
+        return res.status(201).json(updatedTarefa);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 };

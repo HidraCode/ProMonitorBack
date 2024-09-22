@@ -4,7 +4,7 @@ import {
     getEditalService, 
     getEditalLinkService, 
     createEditalService, 
-    updateEditalService 
+    updateEditalService
 } from "../services/editalService.js";
 
 // Controlador para obter todos os editais

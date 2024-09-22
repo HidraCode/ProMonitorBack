@@ -71,7 +71,7 @@ CREATE TABLE INSCRICAO (
 
 DROP TABLE IF EXISTS MONITORIA;
 CREATE TABLE MONITORIA (
-    codigo_monitoria INT PRIMARY KEY,
+    codigo_monitoria INT PRIMARY KEY AUTO_INCREMENT,
     codigo_monitor INT,
     codigo_disciplina INT,
     data_inicio DATE,
@@ -92,31 +92,52 @@ CREATE TABLE TAREFA (
     disciplina VARCHAR(40),
     arquivo_aux LONGBLOB,
     tipo ENUM ('tarefa', 'material'),
+    status ENUM('concluida', 'pendente', 'atrasada') DEFAULT NULL,  
     FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
-DROP TABLE IF EXISTS DESEMPENHO;
-CREATE TABLE DESEMPENHO (
-    codigo_desempenho INT,
-    codigo_monitoria INT,
+DROP TABLE IF EXISTS ANEXOS_RESPOSTAS;
+CREATE TABLE ANEXOS_RESPOSTAS (
+    codigo_tarefa INT,
+    codigo_monitor INT,
+    anexos_monitor LONGBLOB NOT NULL,
+    PRIMARY KEY (codigo_tarefa, codigo_monitor),
+    FOREIGN KEY (codigo_tarefa) REFERENCES TAREFA(codigo_tarefa),
+    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
+);
+
+-- tabela para armazenar os documentos de frequência
+CREATE TABLE FREQUENCIA (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo_aluno INT,
     codigo_professor INT,
-    nota INT,
-    comentario TEXT,
-    data_avaliacao DATE,
-    PRIMARY KEY (codigo_desempenho, codigo_monitoria),
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
+    dados_form TEXT NULL, -- armazena os dados da frequencia para persistir no envio do monitor ao professor
+    pdf LONGBLOB,
+    assinatura_professor TEXT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
+    data_assinatura TIMESTAMP NULL,
+    FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario),
     FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
 );
 
-DROP TABLE IF EXISTS RELATORIO;
+-- tabela para armazenar os documentos de relatório final
 CREATE TABLE RELATORIO (
-    codigo_relatorio INT,
-    codigo_monitoria INT,
-    codigo_monitor INT,
-    descricao TEXT,
-    data_postagem DATE,
-    PRIMARY KEY (codigo_relatorio, codigo_monitoria),
-    FOREIGN KEY (codigo_monitoria) REFERENCES MONITORIA(codigo_monitoria),
-    FOREIGN KEY (codigo_monitor) REFERENCES MONITOR(codigo_monitor)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo_aluno INT,
+    codigo_professor INT,
+    dados_form TEXT NULL, -- armazena os dados da frequencia para persistir no envio do monitor ao professor
+    pdf LONGBLOB,
+    assinatura_professor TEXT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
+    data_assinatura TIMESTAMP NULL,
+    FOREIGN KEY (codigo_aluno) REFERENCES USUARIO(codigo_usuario),
+    FOREIGN KEY (codigo_professor) REFERENCES USUARIO(codigo_usuario)
+);
+
+-- tabela para armazenar as chaves dos professores
+CREATE TABLE CHAVES_PROFESSOR (
+    codigo_professor INT PRIMARY KEY,
+    chave_publica TEXT NOT NULL,
+    chave_privada TEXT NOT NULL
 );

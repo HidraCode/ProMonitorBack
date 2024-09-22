@@ -34,7 +34,7 @@ export const getEditalService = async (codigo_edital) => {
         return rows;
     } catch (error) {
         throw new Error('Erro ao obter edital: ' + error.message);
-    } finally { 
+    } finally {
         connection.release();
     }
 };
@@ -89,7 +89,7 @@ export const createEditalService = async (editalData) => {
         throw new Error('Erro ao criar edital: ' + error.message);
     } finally {
         connection.release();
-    }  
+    }
 };
 
 // Serviço para atualizar as informações de um edital
@@ -103,7 +103,7 @@ export const updateEditalService = async (codigo_edital, editalData) => {
         // Construção dinâmica da consulta SQL
         let updateEditalQuery = 'UPDATE EDITAL SET ';
         let updateEditalValues = [];
-        
+
         if (titulo) {
             updateEditalQuery += 'titulo = ?, ';
             updateEditalValues.push(titulo);

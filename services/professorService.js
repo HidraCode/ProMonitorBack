@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
 import { pool } from '../database/db.js';
+import { gerarChavesDoProfessor } from "../services/assinaturaService.js"
 
 dotenv.config();
 
@@ -59,14 +59,14 @@ export const createProfessorService = async (professorData) => {
     try {
         // Verificar se o email já está cadastrado
         const [existingEmail] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
-        if (existingEmail.length > 0){
-          throw new Error('Email já está em uso!');
+        if (existingEmail.length > 0) {
+            throw new Error('Email já está em uso!');
         }
 
         // Verifica se o telefone já está cadastrado
         const [existingPhone] = await connection.query('SELECT * FROM USUARIO WHERE telefone = ?', [telefone]);
         if (existingPhone.length > 0) {
-        throw new Error('Telefone já está em uso!');
+            throw new Error('Telefone já está em uso!');
         }
 
         const query = `
@@ -75,14 +75,17 @@ export const createProfessorService = async (professorData) => {
         `;
 
         const [result] = await connection.query(query, ['professor', nome, matricula, cpf,
-             telefone, data_nascimento, email, hashedPassword]);
+            telefone, data_nascimento, email, hashedPassword]);
+
+        // Gera as chaves públicas e privadas do professor
+        await gerarChavesDoProfessor (result.insertId)
 
         // Cria o payload do token com o codigo_usuario, papel e email
         const payload = { codigo_usuario: result.insertId, role: 'professor', email };
         // Gera o token JWT
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
-        return { 
+        return {
             codigo_usuario: result.insertId,
             token,
         };
@@ -110,7 +113,7 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
         // Construção dinâmica da consulta SQL
         let updateUsuarioQuery = 'UPDATE USUARIO SET ';
         let updateUsuarioValues = [];
-        
+
         if (nome) {
             updateUsuarioQuery += 'nome = ?, ';
             updateUsuarioValues.push(nome);
@@ -122,8 +125,8 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
         if (email) {
             // Verificar se o email já está cadastrado
             const [existingEmail] = await connection.query('SELECT * FROM USUARIO WHERE email = ?', [email]);
-            if (existingEmail.length > 0){
-            throw new Error('Email já está em uso!');
+            if (existingEmail.length > 0) {
+                throw new Error('Email já está em uso!');
             }
             updateUsuarioQuery += 'email = ?, ';
             updateUsuarioValues.push(email);
@@ -132,7 +135,7 @@ export const updateProfessorService = async (codigo_usuario, professorData) => {
             // Verifica se o telefone já está cadastrado
             const [existingPhone] = await connection.query('SELECT * FROM USUARIO WHERE telefone = ?', [telefone]);
             if (existingPhone.length > 0) {
-            throw new Error('Telefone já está em uso!');
+                throw new Error('Telefone já está em uso!');
             }
             updateUsuarioQuery += 'telefone = ?, ';
             updateUsuarioValues.push(telefone);
@@ -173,7 +176,7 @@ export const createCoordenadorService = async (codigo_professor) => {
             FROM USUARIO
             WHERE codigo_usuario = ? AND tipo = ?
             `, [codigo_professor, 'professor']);
-        
+
         if (existingProfessor.length === 0) {
             throw new Error('Não existe professor com esse código');
         }
@@ -220,7 +223,7 @@ export const getAllCoordenadoresService = async () => {
 };
 
 // Serviço para um  professor atribuir uma tarefa a um monitor
-export const atribuirTarefaService = async (codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo) => {
+export const atribuirTarefaService = async (codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo, status) => {
     const connection = await pool.getConnection();
 
     try {
@@ -229,8 +232,8 @@ export const atribuirTarefaService = async (codigo_monitor, codigo_professor, ti
         // se o tipo for 'tarefa' adiciona a data_conclusão
         if (tipo === 'tarefa') {
             query = `
-                INSERT INTO TAREFA (codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)   
+                INSERT INTO TAREFA (codigo_monitor, codigo_professor, titulo, descricao, data_conclusao, disciplina, arquivo_aux, tipo, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)   
             `;
             params = [
                 codigo_monitor,
@@ -240,9 +243,10 @@ export const atribuirTarefaService = async (codigo_monitor, codigo_professor, ti
                 data_conclusao,
                 disciplina,
                 arquivo_aux.buffer,
-                tipo
+                tipo,
+                status
             ];
-        } else if (tipo === 'material') { // se o tipo for 'material' exclui o prazo
+        } else if (tipo === 'material') { // se o tipo for 'material' exclui o prazo e status
             query = `
                 INSERT INTO TAREFA (codigo_monitor, codigo_professor, titulo, descricao, disciplina, arquivo_aux, tipo)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -254,7 +258,8 @@ export const atribuirTarefaService = async (codigo_monitor, codigo_professor, ti
                 descricao,
                 disciplina,
                 arquivo_aux.buffer,
-                tipo
+                tipo,
+                status
             ];
         } else {
             throw new Error('Tipo deve ser \'tarefa\' ou \'material\'');
@@ -273,3 +278,54 @@ export const atribuirTarefaService = async (codigo_monitor, codigo_professor, ti
         connection.release();
     }
 };
+
+export const createDisciplinaService = async (nome) => {
+    // Recupera os dados da disciplina
+    const connection = await pool.getConnection();
+    try {
+
+        // Insere os dados da disciplina na table DISCIPLINA
+        const query = `
+            INSERT INTO DISCIPLINA (nome) VALUES (?)`
+
+        const values = [nome];
+        const [result] = await connection.query(query, values);
+
+        return nome;
+    } catch (error) {
+        throw new Error('Erro ao criar disciplina: ' + error.message);
+    } finally {
+        connection.release();
+    }
+}
+
+export const createMonitoriaService = async (monitoriaData) => {
+    // Recupera os dados da disciplina
+    const { codigo_monitor, codigo_disciplina, data_inicio, data_fim, ativo } = monitoriaData;
+
+    const connection = await pool.getConnection();
+    try {
+
+        // Insere os dados do edital na tabela EDITAL
+        const query = `
+            INSERT INTO MONITORIA ( codigo_monitor, codigo_disciplina, data_inicio, data_fim, ativo)
+            VALUES (?, ?, ?, ?, ?)
+        `
+
+        const values = [codigo_monitor, codigo_disciplina, data_inicio, data_fim, ativo];
+        const [result] = await connection.query(query, values);
+
+        return {
+            codigo_monitor,
+            codigo_disciplina,
+            data_inicio,
+            data_fim,
+            ativo
+        };
+
+    } catch (error) {
+        throw new Error('Erro ao criar monitoria: ' + error.message);
+    } finally {
+        connection.release();
+    }
+}

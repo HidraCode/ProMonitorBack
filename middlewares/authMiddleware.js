@@ -6,10 +6,14 @@ dotenv.config();
 // Checa o token para permitir acesso a rota
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
+  console.log('auth:' + authHeader);
+  
   if (!authHeader) return res.status(401).json({ message: 'Token não fornecido' });
   
   const token = authHeader.split(' ')[1];
-  
+  console.log(token)
+  console.log(req.user)
+
   if (!token) return res.status(401).json({ message: 'Token inválido' });
  
   try {
@@ -18,7 +22,6 @@ export const authenticateToken = async (req, res, next) => {
 
     // const decodedToken = jwt.decode(token);
     // console.log(decodedToken);  // Verificar se `role` está presente
-
     next();
   } catch (err) {
     return res.status(403).json({ message: 'Token inválido' });

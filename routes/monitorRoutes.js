@@ -1,19 +1,27 @@
 import express from 'express';
-import { 
-    getAllMonitores, 
-    getActiveMonitores, 
+import multer from 'multer';
+import {
+    getAllMonitores,
+    getActiveMonitores,
     getInactiveMonitores,
-    getMonitor, 
+    getMonitor,
     createMonitor,
     updateMonitor,
     getMonitoresProfessor,
     getTarefasMonitor,
-    downloadArquivoTarefa
+    downloadArquivoTarefa,
+    getMonitoria,
+    updateTarefaMonitor,
+    getTarefa,
 } from "../controllers/monitorController.js";
+import { enviarFrequencia } from "../controllers/frequenciaController.js";
+import { enviarRelatorio } from '../controllers/relatorioController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
-
+// Configuração do multer para upload de arquivos
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 /**
  * @swagger
  * tags:
@@ -602,12 +610,24 @@ router.post('/create', createMonitor);
  *       500:
  *         description: Erro interno no servidor
  */
-router.put('/:codigo_monitor', updateMonitor);
+router.put('/:codigo_monitor', authenticateToken, authorizeRoles('monitor'), updateMonitor);
+
+router.get('/monitoria/dados', authenticateToken, authorizeRoles('monitor'), getMonitoria)
 
 // Rota para obter todas as tarefas atribuídas a um monitor
-router.get('/tarefas/:codigo_monitor', getTarefasMonitor);
+router.get('/tarefas/:codigo_usuario', authenticateToken, authorizeRoles('monitor'), getTarefasMonitor);
 
 // Rota para baixar o arquivo auxiliar de uma tarefa
-router.get('/tarefas/:codigo_monitor/:codigo_tarefa/download', downloadArquivoTarefa);
+router.get('/tarefas/:codigo_usuario/:codigo_tarefa/download', authenticateToken, authorizeRoles('monitor'), downloadArquivoTarefa);
+
+// Rota para obter uma tarefa por código
+router.get('/tarefas/:codigo_usuario/:codigo_tarefa', authenticateToken, getTarefa);
+
+// Rota para atualizar uma tarefa dada a uma monitoria com a resposta do monitor
+router.put('/tarefas/:codigo_usuario/:codigo_tarefa/submit', upload.array('files', 3), updateTarefaMonitor)
+
+router.post('/enviar-relatorio', authenticateToken, authorizeRoles('monitor'), enviarRelatorio);
+
+router.post('/enviar-frequencia', authenticateToken, authorizeRoles('monitor'), enviarFrequencia);
 
 export default router;

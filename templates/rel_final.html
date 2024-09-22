@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Monitoria</title>
+    <style>
+        html,
+        body {
+            font-family: "Times New Roman", Times, serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        /* Estilo da página */
+        .page {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            page-break-after: always;
+            position: relative;
+        }
+
+        .page h1,
+        .page h2,
+        .page h3,
+        .page p {
+            margin-bottom: 0;
+        }
+
+        .page h1 {
+            font-size: 10pt;
+        }
+
+        .page h2 {
+            font-size: 16pt;
+        }
+
+        .page h3 {
+            font-size: 10pt;
+        }
+
+        .page p {
+            font-size: 8pt;
+            font-style: normal;
+        }
+
+        .page:last-of-type {
+            page-break-after: auto;
+        }
+
+        .top-content,
+        .middle-content,
+        .bottom-content,
+        .footer {
+            width: 100%;
+        }
+
+        .top-content {
+            padding-top: 0;
+        }
+
+        .middle-content {
+            display: flex;
+            justify-content: flex-end;
+            /* Alinha o conteúdo à direita */
+            padding-top: 40%;
+        }
+
+        .bottom-content {
+            padding-top: 25%;
+            text-align: right;
+        }
+
+        .footer {
+            text-align: center;
+            position: absolute;
+            padding-top: 25%;
+        }
+
+        /* Estilo para o restante do conteúdo */
+        .content {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        .content h2 {
+            font-size: 10pt;
+        }
+
+        .content p {
+            font-size: 8pt;
+        }
+
+        .date {
+            margin-top: 20px;
+        }
+
+        /* Estilo da página de assinatura */
+        .page-signature {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            page-break-before: always;
+            position: relative;
+        }
+        .page-signature p {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Primeira página -->
+    <div class="page">
+        <div class="top-content">
+            <h1>UNIVERSIDADE FEDERAL RURAL DE PERNAMBUCO</h1>
+            <h1>DEPARTAMENTO DE COMPUTAÇÃO (DC)</h1>
+        </div>
+        <div class="middle-content">
+            <div>
+                <h2>RELATÓRIO DE MONITORIA</h2>
+                <h3><strong>Disciplina:</strong> {{disciplina}}</h3>
+            </div>
+        </div>
+        <div class="bottom-content">
+            <p>Monitor: {{nome}}</p>
+            <p>Curso: {{curso}}</p>
+            <p>Orientador(a): {{orientador}}</p>
+        </div>
+        <div class="footer">
+            <h3><strong>Recife, {{ano}}</strong></h3>
+        </div>
+    </div>
+
+    <!-- Conteúdo da segunda página em diante -->
+    <div>
+        <div class="content">
+            <h2>1. Metodologias utilizadas</h2>
+            <p>{{metodologia}}</p>
+        </div>
+        <div class="content">
+            <h2>2. Atividades planejadas realizadas durante o período</h2>
+            <p>{{atividades}}</p>
+        </div>
+        <div class="content">
+            <h2>3. Objetivos atingidos (Se não, com justificativas)</h2>
+            <p>{{objetivos}}</p>
+        </div>
+        <div class="content">
+            <h2>4. Dificuldades enfrentadas e sugestões para solucioná-las</h2>
+            <p>{{dificuldades}}</p>
+        </div>
+        <div class="content">
+            <h2>5. Conclusões</h2>
+            <p>{{conclusao}}</p>
+        </div>
+    </div>
+
+    <div class="page-signature">
+        <div class="content">
+            Assinatura do Monitor(a):
+            <p class="assinatura"><i>Documento assinado eletronicamente por {{nome}}</i><br>
+            Aluno(a): {{nome}}            
+            </p>           
+        </div>
+
+        <div class="content">
+            Assinatura do Orientador(a):
+            <p class="assinatura"><i>Documento assinado eletronicamente por {{orientador}}</i><br>
+              Professor(a): {{orientador}}</p>
+        </div>
+
+        <div class="date">
+            {{dataAssinatura}}
+        </div>
+        <p style="font-size: smaller;"><b>A autenticidade deste documento pode ser conferida no site:
+            http://localhost:5173/verificar-documento/relatorio/{{documentId}}</b></p>
+    </div>
+
+</body>
+
+</html>
