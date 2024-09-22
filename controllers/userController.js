@@ -1,7 +1,7 @@
 // controllers/userController.js
 
 // Importa as funções do serviço de usuário que lidam com as operações de banco de dados.
-import { getAllUsersService, createUserService, getUserService } from '../services/userService.js';
+import { getAllUsersService, createUserService } from '../services/userService.js';
 
 // Controlador para a rota GET /api/users
 export const getAllUsers = async (req, res) => {
@@ -13,20 +13,6 @@ export const getAllUsers = async (req, res) => {
   } catch (error) {
     // Em caso de erro, retorna uma resposta de erro com o status 500
     res.status(500).json({ message: 'Erro ao buscar usuários', error: error.message });
-  }
-};
-
-// Controlador para a rota GET /api/user/personal-data
-export const getUser = async (req, res) => {
-  const { codigo_usuario } = req.user.codigo_usuario;
-  try {
-    // Chama o serviço para obter os dados de um usuário pelo codigo_usuario
-    const user = await getUserService();
-    // Retorna a lista de usuários no formato JSON
-    res.status(200).json(user);
-  } catch (error) {
-    // Em caso de erro, retorna uma resposta de erro com o status 500
-    res.status(500).json({ message: 'Erro ao buscar usuário', error: error.message });
   }
 };
 

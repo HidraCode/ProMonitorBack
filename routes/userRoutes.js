@@ -71,6 +71,4 @@ const router = express.Router();
 router.get('/', getAllUsers);
 //router.post('/', createUser);
 
-router.get('/personal-data', authenticateToken, getUser)
-
 export default router;
