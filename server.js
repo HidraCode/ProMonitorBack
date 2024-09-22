@@ -50,18 +50,7 @@ app.get('/healthcheck', (req, res) => {
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
-app.use((req, res, next) => {
-  res.setTimeout(5000, () => {
-    console.log('Request has timed out.');
-    res.send(408); // Código de timeout
-  });
-  next();
-});
-
 // Iniciar o servidor
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
-
-// Desativar keep-alive timeout
-server.keepAliveTimeout = 0;

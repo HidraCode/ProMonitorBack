@@ -1,5 +1,5 @@
 import express from 'express';
-import { getEditaisByProfessor, getAllEditais, getAllPublicEditais, getEdital, createEdital, updateEdital, getEditalLink } from '../controllers/editalController.js';
+import { getAllEditais, getAllPublicEditais, getEdital, createEdital, updateEdital, getEditalLink } from '../controllers/editalController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -69,8 +69,6 @@ const router = express.Router();
  *         description: Erro interno no servidor
  */
 router.get('/', getAllEditais); //authorizeRoles('professor'), getAllEditais);
-
-router.get('/professor/:codigo_professor', authenticateToken, authorizeRoles('professor'), getEditaisByProfessor);
 
 /**
  * @swagger

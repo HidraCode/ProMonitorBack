@@ -13,38 +13,6 @@ export const getAllEditaisService = async () => {
     }
 };
 
-export const getEditaisByProfessorService = async (codigo_professor) => {
-    const connection = await pool.getConnection();
-    try {
-        const [rows] = await connection.query('SELECT * FROM EDITAL WHERE codigo_professor = ?', [codigo_professor]);
-
-        // Função para formatar a data
-        const formatDate = (dateString) => {
-            const date = new Date(dateString);
-            if (isNaN(date.getTime())) {
-                return dateString; // Retorna a string original se não for uma data válida
-            }
-            const day = String(date.getUTCDate()).padStart(2, '0');
-            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-            const year = date.getUTCFullYear();
-            return `${day}/${month}/${year}`; // Formato: dd/MM/yyyy
-        };
-
-        // Formatar as datas
-        const formattedRows = rows.map(row => ({
-            ...row,
-            data_inicio: formatDate(row.data_inicio),
-            data_fim: formatDate(row.data_fim)
-        }));
-
-        return formattedRows;
-    } catch (error) {
-        throw new Error('Erro ao obter editais: ' + error.message);
-    } finally {
-        connection.release();
-    }
-}
-
 // Serviço para obter todos os editais publicos
 export const getAllPublicEditaisService = async () => {
     const connection = await pool.getConnection();

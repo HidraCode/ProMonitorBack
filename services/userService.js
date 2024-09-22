@@ -17,18 +17,6 @@ export const getAllUsersService = async () => {
   }
 };
 
-// Serviço para obter os dados de um usuário pelo código armazenado no token
-export const getUserService = async (codigo_usuario) => {
-  const connection = await pool.getConnection();  // Se conecta ao banco de dados
-  try {
-    // Realiza e retorna a consulta
-    const [rows] = await connection.query('SELECT * FROM USUARIO WHERE codigo_usuario = ?', [codigo_usuario]);
-    return rows;
-  } finally {
-    connection.release();
-  }
-};
-
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET || 'secret_aqui';
 
