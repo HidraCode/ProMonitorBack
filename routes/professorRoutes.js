@@ -9,7 +9,8 @@ import {
     updateProfessor,
     createDisciplina,
     createMonitoria,
-    getTarefasProfessor
+    getTarefasProfessor,
+    getFrequenciaAndRelatorio
 } from '../controllers/professorController.js';
 import { assinarFrequencia, assinarRelatorio } from '../controllers/assinaturaController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
@@ -310,6 +311,9 @@ router.post('/monitoria/create', createMonitoria); //Criar monitoria
 router.post('/:codigo_usuario/assinar-relatorio', assinarRelatorio);
 
 router.post('/:codigo_usuario/assinar-frequencia', assinarFrequencia);
+
+// rota para obter relatorios e frequencias de um prof
+router.get('/relatorios-frequencias/:codigo_usuario', getFrequenciaAndRelatorio);
 
 // rota para obter as tarefas atribuidas por um professor
 router.get('/tarefas/:codigo_usuario', getTarefasProfessor);

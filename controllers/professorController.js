@@ -8,6 +8,7 @@ import {
     createDisciplinaService,
     createMonitoriaService,
     getTarefasProfessorService,
+    getFrequenciaAndRelatorioService,
 } from "../services/professorService.js";
 
 // Controlador para obter todos os professores
@@ -102,6 +103,17 @@ export const createMonitoria = async (req, res) => {
         return res.status(201).json(newMonitoria);
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao criar a monitoria: ' + error.message });
+    }
+};
+
+// obter frequencias e relatorios
+export const getFrequenciaAndRelatorio = async (req, res) => {
+    try {
+        const { codigo_usuario } = req.params;
+        const relatorios_frequencias = await getFrequenciaAndRelatorioService(codigo_usuario);
+        return res.status(200).json(relatorios_frequencias);
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao obter relatórios e frequências: ' + error.message });
     }
 };
 

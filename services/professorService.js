@@ -335,14 +335,23 @@ export const getFrequenciaAndRelatorioService = async (codigo_usuario) => {
     const connection = await pool.getConnection();
 
     try {
-        const query = `
-            SELECT f.*, r.*
-            FROM FREQUENCIA f
-            JOIN RELATORIO r ON f.codigo_professor = r.codigo_professor
-            WHERE f.codigo_professor = ?
+        const query_f = `
+            SELECT *
+            FROM FREQUENCIA
+            WHERE codigo_professor = ?
         `;
-        const [result] = await connection.query(query, [codigo_usuario]);
-        return result;
+        const query_r = `
+            SELECT *
+            FROM RELATORIO
+            WHERE codigo_professor = ?
+        `;
+
+        const [frequencias] = await connection.query(query_f, [codigo_usuario]);
+        const [relatorios] = await connection.query(query_r, [codigo_usuario]);
+        return {
+            frequencias,
+            relatorios
+        };
     } catch (error) {
         throw new Error('Erro ao obter frequencias e relatorios: ' + error.message);
     } finally {
