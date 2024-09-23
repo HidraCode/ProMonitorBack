@@ -7,6 +7,7 @@ import {
     atribuirTarefaService,
     createDisciplinaService,
     createMonitoriaService,
+    getTarefasProfessorService,
 } from "../services/professorService.js";
 
 // Controlador para obter todos os professores
@@ -101,5 +102,16 @@ export const createMonitoria = async (req, res) => {
         return res.status(201).json(newMonitoria);
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao criar a monitoria: ' + error.message });
+    }
+};
+
+// controlador para obter as tarefas que um professor atribuiu 
+export const getTarefasProfessor = async (req, res) => {
+    try {
+        const { codigo_usuario } = req.params;
+        const atividades = await getTarefasProfessorService(codigo_usuario);
+        return res.status(200).json(atividades);
+    } catch (error) {
+        return res.status(500).json({ message: 'Erro ao obter atividdades: ' + error.message });
     }
 };

@@ -329,3 +329,43 @@ export const createMonitoriaService = async (monitoriaData) => {
         connection.release();
     }
 }
+
+// obtém as frequencias e relatorios finais de monitores associados ao professor
+export const getFrequenciaAndRelatorioService = async (codigo_usuario) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const query = `
+            SELECT f.*, r.*
+            FROM FREQUENCIA f
+            JOIN RELATORIO r ON f.codigo_professor = r.codigo_professor
+            WHERE f.codigo_professor = ?
+        `;
+        const [result] = await connection.query(query, [codigo_usuario]);
+        return result;
+    } catch (error) {
+        throw new Error('Erro ao obter frequencias e relatorios: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};
+
+// obtém as tarefas postadas por um professor
+export const getTarefasProfessorService = async (codigo_usuario) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const query = `
+            SELECT t.*, u.nome
+            FROM TAREFA t
+            JOIN USUARIO u ON t.codigo_professor = u.codigo_usuario
+            WHERE t.codigo_professor = ?
+        `;
+        const [result] = await connection.query(query, [codigo_usuario]);
+        return result;
+    } catch (error) {
+        throw new Error('Erro ao obter tarefas: ' + error.message);
+    } finally {
+        connection.release();
+    }
+};
